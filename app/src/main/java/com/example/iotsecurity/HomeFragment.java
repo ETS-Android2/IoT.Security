@@ -16,7 +16,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -35,7 +37,7 @@ public class HomeFragment extends Fragment {
         textView = rootView.findViewById(R.id.textView);
 
         requestQueue = Volley.newRequestQueue(this.getContext().getApplicationContext());
-        String baseUrl = String.format("http://192.168.0.13/api/6dopn9py8UJkMiStzn0ps0c5ReQEy8kbeIQea6iY");
+        makeRequest();
 //        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl, new Response.Listener<JSONObject>() {
 //            @Override
 //            public void onResponse(JSONObject response) {
@@ -52,6 +54,46 @@ public class HomeFragment extends Fragment {
 //        requestQueue.add(request);
 
         return rootView;
+    }
+
+    private void makeRequest() {
+        String baseUrl = String.format("http://192.168.0.13/api/6dopn9py8UJkMiStzn0ps0c5ReQEy8kbeIQea6iY/lights");
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl,null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    processResponse(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println(error);
+            }
+        });
+        request.setShouldCache(false);
+        requestQueue.add(request);
+    }
+
+    private void processResponse(JSONObject response) throws JSONException {
+        JSONObject lightJson = new JSONObject(); // 테스트용 초기
+        for (int i = 1; i<response.length(); i++) {
+            lightJson = response.getJSONObject(String.valueOf(i));
+            Product light = new Product();
+            light.name = lightJson.getString("name");
+            light.provider = lightJson.getString("manufacturername");
+            light.category = "lights";
+        }
+        textView.setText(response.toString()); // 테스트화용 텍스트뷰
+//        Gson gson = new Gson();
+//        ProductList productList = gson.fromJson(response, ProductList.class);
+//        for (int i = 0; i < productList.products.size(); i++) {
+//            Product product = productList.products.get(i);
+//            adpater.addItem(product);
+//        }
+//        adpater.notifyDataSetChanged();
     }
 
 }

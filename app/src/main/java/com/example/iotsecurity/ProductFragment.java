@@ -9,70 +9,76 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class ProductFragment extends Fragment {
-    ProductAdapter adpater;
+
+    ProductAdapter adapter;
     RecyclerView recyclerView;
 
-    Product product;
+    Product light;
     static RequestQueue requestQueue;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.product_list, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.product_fragment, container, false);
 
-        adpater = new ProductAdapter();
+        adapter = new ProductAdapter();
 
         recyclerView= rootView.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adpater);
-        makeRequest();
-        requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
+        recyclerView.setAdapter(adapter);
 
+
+        requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
+        makeRequest();
         return rootView;
     }
 
-    private void makeRequest() {
-        String baseUrl = String.format("http://192.168.0.13/api/6dopn9py8UJkMiStzn0ps0c5ReQEy8kbeIQea6iY");
-        StringRequest request = new StringRequest(Request.Method.GET, baseUrl, new Response.Listener<String>() {
+    private void makeRequest(){
+        String baseUrl = String.format("http://192.168.0.13/api/CNvVAzMQxpTl2FNN12ipOCvqxbA7X0HEbMoGXoht/lights/");
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl,null, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
-                processResponse(response);
+            public void onResponse(JSONObject response) {
+                try {
+                    processResponse(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                System.out.println(error);
+                System.out.println(error.toString());
             }
         });
         request.setShouldCache(false);
         requestQueue.add(request);
     }
 
-    private void processResponse(String response) {
-        JsonParser jsonParser = new JsonParser();
-//        JsonElement
-//        Gson gson = new Gson();
-//        ProductList productList = gson.fromJson(response, ProductList.class);
-//        for (int i = 0; i < productList.products.size(); i++) {
-//            Product product = productList.products.get(i);
-//            adpater.addItem(product);
-//        }
-//        adpater.notifyDataSetChanged();
+    private void processResponse(JSONObject response) throws JSONException {
+        JSONObject lightJson;
+        // response.lenth()가 1이 작게 나옴! 왜?!?!
+        for (int i = 1; i<response.length()+1; i++) {
+            lightJson = response.getJSONObject(String.valueOf(i));
+            light = new Product();
+            light.name = lightJson.getString("name");
+            light.provider = lightJson.getString("manufacturername");
+            light.category = "lights";
+            adapter.addItem(light);
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
 }

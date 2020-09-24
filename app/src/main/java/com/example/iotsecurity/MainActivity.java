@@ -33,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
         pager = findViewById(R.id.pager);
         pager.setOffscreenPageLimit(4);
 
+        // fragment 전용 adapter
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
+
 
         ProductFragment productFragment = new ProductFragment();
         adapter.addItem(productFragment);
@@ -51,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
     class MyPagerAdapter extends FragmentStatePagerAdapter {
         ArrayList<Fragment> fragments = new ArrayList<Fragment>();
 
-        public MyPagerAdapter(FragmentManager supportFragmentManager) {
-            super(supportFragmentManager);
+        public MyPagerAdapter(@NonNull FragmentManager fm) {
+            super(fm);
         }
 
         @NonNull
