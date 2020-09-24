@@ -1,5 +1,6 @@
 package com.example.iotsecurity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,14 @@ public class ProductFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-
+        adapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                Product tempLight = adapter.getItem(position);
+                Intent intent = new Intent(getActivity(), ProductDetail.class);
+                startActivity(intent);
+            }
+        });
 
         requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
         makeRequest();
