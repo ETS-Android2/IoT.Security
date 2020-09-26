@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ControlFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="129dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/lights_intensity">
+            </ImageView>
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/intensity_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:max="254"
+                android:min="0" />
+
+
+            <ImageView
+                android:layout_marginLeft="25dp"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/hue">
+            </ImageView>
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/hue_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:max="65535"
+                android:min="0" />
+            <ImageView
+                android:layout_marginLeft="25dp"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/saturation">
+            </ImageView>
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/saturation_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:max="254"
+                android:min="0" />
+
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginBottom="20dp"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/risk_score">
+            </ImageView>
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/risk_score"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                ></com.github.mikephil.charting.charts.PieChart>
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

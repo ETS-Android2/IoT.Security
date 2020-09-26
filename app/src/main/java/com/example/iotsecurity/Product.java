@@ -8,6 +8,7 @@ public class Product implements Serializable {
     String provider;
     String category;
     String connection;
+    double score;
     boolean display;
     ArrayList<String> data;
 

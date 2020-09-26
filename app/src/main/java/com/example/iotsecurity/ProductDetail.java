@@ -33,21 +33,28 @@ public class ProductDetail extends AppCompatActivity {
         pager = findViewById(R.id.pager);
         pager.setOffscreenPageLimit(3);
 
+        // fragment에 전달할 객체
         Intent intent = getIntent();
         product = (Product)intent.getSerializableExtra("product");
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("product", product);
+
         // fragment 전용 adapter
         devicePagerAdapter adapter = new devicePagerAdapter(getSupportFragmentManager());
 
+        // Control Panel
+        ControlFragment controlFragment = new ControlFragment();
+        controlFragment.setArguments(bundle);
+        adapter.addItem(controlFragment);
+
+        // Device Detail
         DetailFragment detailFragment = new DetailFragment();
-        // 프래그먼트에 데이터 전달
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("product", product);
+        // fragment에 데이터 전달
         detailFragment.setArguments(bundle);
-        // 어댑터에 프래그먼트 추가
+        // 어댑터에 fragment 추가
         adapter.addItem(detailFragment);
 
-        HomeFragment homeFragment = new HomeFragment();
-        adapter.addItem(homeFragment);
+
 
         pager.setAdapter(adapter);
 

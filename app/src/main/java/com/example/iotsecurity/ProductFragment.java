@@ -53,13 +53,14 @@ public class ProductFragment extends Fragment {
         });
 
         requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
-        makeRequest();
+        String baseUrl = String.format("http://192.168.0.13/api/CNvVAzMQxpTl2FNN12ipOCvqxbA7X0HEbMoGXoht/lights/");
+        makeRequest(baseUrl);
+
         return rootView;
     }
 
-    private void makeRequest(){
-        String baseUrl = String.format("http://192.168.0.13/api/CNvVAzMQxpTl2FNN12ipOCvqxbA7X0HEbMoGXoht/lights/");
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl,null, new Response.Listener<JSONObject>() {
+    private void makeRequest(String baseUrl){
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl,null,  new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -87,6 +88,7 @@ public class ProductFragment extends Fragment {
             light.name = lightJson.getString("name");
             light.provider = lightJson.getString("manufacturername");
             light.category = "lights";
+            light.score = 27.34;
             adapter.addItem(light);
         }
 
