@@ -43,7 +43,11 @@ public class ProductFragment extends Fragment {
             @Override
             public void onItemClick(View v, int position) {
                 Product tempLight = adapter.getItem(position);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("product", tempLight);
                 Intent intent = new Intent(getActivity(), ProductDetail.class);
+                intent.putExtra("product", tempLight);
+
                 startActivity(intent);
             }
         });

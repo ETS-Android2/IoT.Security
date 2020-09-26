@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="10dp"
     android:orientation="vertical"
     tools:context=".DetailFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp">
         <LinearLayout
@@ -18,14 +20,158 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ListView
-                android:id="@+id/listView"
-                android:layout_width="409dp"
-                android:layout_height="729dp"
-                tools:layout_editor_absoluteX="1dp"
-                tools:layout_editor_absoluteY="1dp"
-                >
-            </ListView>
+            <!--이름 행-->
+            <LinearLayout
+                android:id="@+id/name_tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Name" />
+                    <TextView
+                        android:id="@+id/name_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+            <View
+                android:id="@+id/divider1"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E"></View>
+
+            <!--카테고리 행-->
+            <LinearLayout
+                android:id="@+id/category_tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/category"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Category" />
+                    <TextView
+                        android:id="@+id/category_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+            <View
+                android:id="@+id/divider2"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E"></View>
+
+            <!--장치 제공자 행-->
+            <LinearLayout
+                android:id="@+id/provider_tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/provider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Provider" />
+                    <TextView
+                        android:id="@+id/provider_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+            <View
+                android:id="@+id/divider3"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E"></View>
+
+            <!--데이터 행-->
+            <LinearLayout
+                android:id="@+id/data_tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Data" />
+                    <TextView
+                        android:id="@+id/data_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+            <View
+                android:id="@+id/divider"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E"></View>
+
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

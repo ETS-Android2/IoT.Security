@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -22,6 +23,7 @@ public class ProductDetail extends AppCompatActivity {
     static Handler handler = new Handler();
 
     ViewPager pager;
+    Product product;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +33,19 @@ public class ProductDetail extends AppCompatActivity {
         pager = findViewById(R.id.pager);
         pager.setOffscreenPageLimit(3);
 
+        Intent intent = getIntent();
+        product = (Product)intent.getSerializableExtra("product");
         // fragment 전용 adapter
         devicePagerAdapter adapter = new devicePagerAdapter(getSupportFragmentManager());
 
         DetailFragment detailFragment = new DetailFragment();
+        // 프래그먼트에 데이터 전달
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("product", product);
+        detailFragment.setArguments(bundle);
+        // 어댑터에 프래그먼트 추가
         adapter.addItem(detailFragment);
+
         HomeFragment homeFragment = new HomeFragment();
         adapter.addItem(homeFragment);
 
