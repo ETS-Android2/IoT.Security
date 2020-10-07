@@ -22,6 +22,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+/**
+ * ver. 2020.09.27 : 기능 동작 테스트 페이지로 사용 중
+ * 현재 저장된 장치에 대한 그래프, 평균 risk score 등등 전체적인 통계를 다룰 페이지
+ */
 public class HomeFragment extends Fragment {
     RequestQueue requestQueue;
     TextView textView;

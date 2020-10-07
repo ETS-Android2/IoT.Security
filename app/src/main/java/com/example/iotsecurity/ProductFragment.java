@@ -20,7 +20,12 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
+/**
+ * 장치 정보를 받아와서 recyclerView로 장치별로 나눔.
+ *
+ * ver. 2020.09.26 : http request를 통해 장치 리스트를 json으로 받아옴.
+ * 추후 db의 정보를 받아와서 json으로 재정의 후 정보 나누는 것으로 변경
+ */
 public class ProductFragment extends Fragment {
 
     ProductAdapter adapter;

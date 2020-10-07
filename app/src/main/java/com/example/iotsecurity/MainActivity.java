@@ -7,22 +7,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 
 import com.google.android.material.tabs.TabLayout;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
-import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
-    static Handler handler = new Handler();
-
     ViewPager pager;
 
     @Override
@@ -36,17 +28,20 @@ public class MainActivity extends AppCompatActivity {
         // fragment 전용 adapter
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
 
-
+        // 제품 리스트 fragment
         ProductFragment productFragment = new ProductFragment();
-        adapter.addItem(productFragment);
+        adapter.addItem(productFragment);   // adapter에 추가
+
+        // home fragment
         HomeFragment homeFragment = new HomeFragment();
         adapter.addItem(homeFragment);
 
+        // adapter 설정
         pager.setAdapter(adapter);
 
         TabLayout tabs = findViewById(R.id.tabs);
-        tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(pager));
-        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
+        tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(pager));     // tab 선택 여부를 확인해 주는 listener
+        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));       // tab 선택에 따라 pager에 해당하는 page 정보를 tab에 넘겨주는 listener
 
     }
 

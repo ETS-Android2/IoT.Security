@@ -5,22 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
 
 import com.google.android.material.tabs.TabLayout;
-
 import java.util.ArrayList;
 
+/**
+ * Product를 클릭했을 때 실행되는 activity
+ * 장치를 제어할 수 있는 Control Fragment
+ * 장치에 대한 정보와 DPD 출력이 가능한 Detail Fragment
+ * 위 2개의 fragment를 제어함.
+ *
+ * ver. 2020.09.27 : 클릭된 product 정보를 bundle로 직접 fragment에 전달
+ * 추후 db에 대한 id를 전달하여 fragment에서 id로 조회 가능하게 업데이트
+ */
 public class ProductDetail extends AppCompatActivity {
-
-    static Handler handler = new Handler();
 
     ViewPager pager;
     Product product;
