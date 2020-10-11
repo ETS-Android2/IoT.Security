@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.Request;
@@ -13,10 +14,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +30,9 @@ import org.json.JSONObject;
  * 현재 저장된 장치에 대한 그래프, 평균 risk score 등등 전체적인 통계를 다룰 페이지
  */
 public class HomeFragment extends Fragment {
+
+    private DatabaseReference mDatabase;
+
     RequestQueue requestQueue;
     TextView textView;
 
@@ -40,6 +46,32 @@ public class HomeFragment extends Fragment {
 
         textView = rootView.findViewById(R.id.textView);
 
+
+        /**
+         * Firebase DB TEST
+         * ver. 2020.10.08 : 연결 및 생성 테스트
+         */
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Product temp = snapshot.child("1").getValue(Product.class);
+
+                textView.setText(temp.name);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+        /**
+         * Volley Connection Request TEST
+         *
+         * ver. 2020.09.24 : 연결 생성 및 get 테스트
+         */
         requestQueue = Volley.newRequestQueue(this.getContext().getApplicationContext());
         makeRequest();
 //        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl, new Response.Listener<JSONObject>() {
@@ -85,19 +117,15 @@ public class HomeFragment extends Fragment {
         JSONObject lightJson = new JSONObject(); // 테스트용 초기
         for (int i = 1; i<response.length(); i++) {
             lightJson = response.getJSONObject(String.valueOf(i));
-            Product light = new Product();
-            light.name = lightJson.getString("name");
-            light.provider = lightJson.getString("manufacturername");
-            light.category = "lights";
+            Product light;
+            String name = lightJson.getString("name");
+            String provider = lightJson.getString("manufacturername");
+            String category = "lights";
+            String connection = "wifi";
+            boolean display = false;
+            light = new Product(name, provider, category, connection, display);
         }
         textView.setText(response.toString()); // 테스트화용 텍스트뷰
-//        Gson gson = new Gson();
-//        ProductList productList = gson.fromJson(response, ProductList.class);
-//        for (int i = 0; i < productList.products.size(); i++) {
-//            Product product = productList.products.get(i);
-//            adpater.addItem(product);
-//        }
-//        adpater.notifyDataSetChanged();
     }
 
 }

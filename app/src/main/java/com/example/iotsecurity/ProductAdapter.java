@@ -54,7 +54,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.myViewHo
             category = itemView.findViewById(R.id.category);
             layout = itemView;
 
-            // 쓸모 없어 보임! 확인 필요
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

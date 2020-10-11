@@ -9,18 +9,38 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
+    public DatabaseReference mDatabase;
+    static RequestQueue requestQueue;
+
     ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+
+        requestQueue = Volley.newRequestQueue(this.getApplicationContext());
+        String baseUrl = String.format("http://192.168.0.13/api/CNvVAzMQxpTl2FNN12ipOCvqxbA7X0HEbMoGXoht/lights/");
+        makeRequest(baseUrl);
 
         pager = findViewById(R.id.pager);
         pager.setOffscreenPageLimit(4);
@@ -65,6 +85,42 @@ public class MainActivity extends AppCompatActivity {
 
         public void addItem(Fragment item) {
             fragments.add(item);
+        }
+    }
+
+    private void makeRequest(String baseUrl){
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl,null,  new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    processResponse(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println(error.toString());
+            }
+        });
+        request.setShouldCache(false);
+        requestQueue.add(request);
+    }
+
+    private void processResponse(JSONObject response) throws JSONException {
+        JSONObject lightJson;
+
+        for (int i = 1; i<=response.length(); i++) {
+            lightJson = response.getJSONObject(String.valueOf(i));
+            Product light = new Product();
+            String name = lightJson.getString("name");
+            String provider = lightJson.getString("manufacturername");
+            String category = "lights";
+            String connection = "wifi";
+            boolean display = false;
+            light = new Product(name, provider, category, connection, display);
+            mDatabase.child(""+i).setValue(light);
         }
     }
 }

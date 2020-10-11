@@ -14,24 +14,24 @@ import java.util.ArrayList;
  * data = 제품이 다루는 데이터
  */
 public class Product implements Serializable {
-    String name;
-    String provider;
-    String category;
-    String connection;
-    double score;
-    boolean display;
-    ArrayList<String> data;
+    public String name;
+    public String provider;
+    public String category;
+    public String connection;
+    public double score;
+    public boolean display;
+    //ArrayList<String> data;
 
     public Product() {
     }
 
-    public Product(String name, String provider, String category, String connection, boolean display, ArrayList<String> data) {
+    public Product(String name, String provider, String category, String connection, boolean display) {
         this.name = name;
         this.provider = provider;
         this.category = category;
         this.connection = connection;
         this.display = display;
-        this.data = data;
+        //this.data = data;
     }
 
 }

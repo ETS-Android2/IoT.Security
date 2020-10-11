@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "583767186591",
+    "firebase_url": "https://iotsecurity-dilab.firebaseio.com",
+    "project_id": "iotsecurity-dilab",
+    "storage_bucket": "iotsecurity-dilab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:583767186591:android:1ad78b5b3f7ea42290d6aa",
+        "android_client_info": {
+          "package_name": "com.example.iotsecurity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "583767186591-osmi4tbolv90pfbhs1tlhbrndaa2vkcc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADksnQmUnwQazs65yWMEp99YnCtiI0Rhw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "583767186591-osmi4tbolv90pfbhs1tlhbrndaa2vkcc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
