@@ -1,9 +1,13 @@
 package com.example.iotsecurity;
 
+import android.content.Intent;
+import android.database.DatabaseErrorHandler;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +20,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,10 +37,17 @@ import org.json.JSONObject;
  *
  */
 public class DetailFragment extends Fragment {
-    TextView name, category, provider, data;
-    Product product;
+    TextView name, category, provider, data, modelId, piId, productName, connection, display,
+            portable, agree, deviceType, serviceType, cycle, period, always, infoType;
+    CheckBox checkName, checkCategory, checkProvider, checkData, checkModelId, checkPiId, checkProductName, checkConnection, checkDisplay,
+            checkPortable, checkAgree, checkDeviceType, checkServiceType, checkCycle, checkPeriod, checkAlways, checkInfoType;
+    FloatingActionButton out;
+    Product product, temp = null;
     String baseUrl;
 
+    JSONObject jsonForOut = new JSONObject();
+
+    private DatabaseReference mDatabase;
     static RequestQueue requestQueue;
 
     @Override
@@ -38,18 +55,110 @@ public class DetailFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.detail_fragment, container, false);
         product = (Product)this.getArguments().getSerializable("product");
 
+        //textView 설정
         name = rootView.findViewById(R.id.name_content);
         category = rootView.findViewById(R.id.category_content);
         provider = rootView.findViewById(R.id.provider_content);
         data = rootView.findViewById(R.id.data_content);
+        modelId = rootView.findViewById(R.id.model_id_content);
+        piId = rootView.findViewById(R.id.pi_id_content);
+        productName = rootView.findViewById(R.id.product_name_content);
+        connection = rootView.findViewById(R.id.connection_content);
+        display = rootView.findViewById(R.id.display_content);
+        portable = rootView.findViewById(R.id.portable_content);
+        agree = rootView.findViewById(R.id.agree_content);
+        deviceType = rootView.findViewById(R.id.device_type_content);
+        serviceType = rootView.findViewById(R.id.service_type_content);
+        cycle = rootView.findViewById(R.id.cycle_content);
+        period = rootView.findViewById(R.id.period_content);
+        always = rootView.findViewById(R.id.always_content);
+        infoType = rootView.findViewById(R.id.info_type_content);
+        // checkBox 설정
+        checkName = rootView.findViewById(R.id.checkbox_name);
+        checkCategory = rootView.findViewById(R.id.checkbox_category);
+        checkProvider = rootView.findViewById(R.id.checkbox_provider);
+        checkData = rootView.findViewById(R.id.checkbox_data);
+        checkModelId = rootView.findViewById(R.id.checkbox_model_id);
+        checkPiId = rootView.findViewById(R.id.checkbox_pi_id);
 
         // 몇번째 전구인지 받아옴
-        String lightNum = product.name.replaceAll("[^0-9]", "");
+        final String lightNum = product.name.replaceAll("[^0-9]", "");
+
+        // DB에서 해당 전구 불러옴
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                temp = snapshot.child(lightNum).getValue(Product.class);
+
+                // 불러온 값을 채우기
+                name.setText(temp.name);
+                provider.setText(temp.provider);
+                category.setText(temp.category);
+                modelId.setText(temp.modelId);
+                piId.setText(temp.piId);
+                productName.setText(temp.productName);
+                connection.setText(temp.connection);
+                display.setText(String.valueOf(temp.display));
+                portable.setText(String.valueOf(temp.portable));
+                agree.setText(String.valueOf(temp.agree));
+                deviceType.setText(temp.deviceType);
+                serviceType.setText(temp.serviceType);
+                cycle.setText(temp.cycle);
+                period.setText(String.valueOf(temp.period));
+                infoType.setText(temp.infoType);
+                if(temp.always == 1)
+                    always.setText("수집안함");
+                else if(temp.always == 2)
+                    always.setText("조건 수집");
+                else
+                    always.setText("상시 수집");
+
+                // 출력용 JSON
+                try {
+                    if(checkName.isChecked())
+                        jsonForOut.put("name", temp.name);
+                    if(checkProvider.isChecked())
+                        jsonForOut.put("provider", temp.provider);
+                    jsonForOut.put("category", temp.category);
+                    jsonForOut.put("modelId", temp.modelId);
+                    jsonForOut.put("piId", temp.piId);
+                    jsonForOut.put("productName", temp.productName);
+                    jsonForOut.put("connection", temp.connection);
+                    jsonForOut.put("display", String.valueOf(temp.display));
+                    jsonForOut.put("portable", String.valueOf(temp.portable));
+                    jsonForOut.put("agree", String.valueOf(temp.agree));
+                    jsonForOut.put("deviceType", temp.deviceType);
+                    jsonForOut.put("serviceType", temp.serviceType);
+                    jsonForOut.put("cycle", temp.cycle);
+                    jsonForOut.put("period", String.valueOf(temp.period));
+                    jsonForOut.put("infoType", temp.infoType);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
-        baseUrl = String.format("http://192.168.0.13/api/CNvVAzMQxpTl2FNN12ipOCvqxbA7X0HEbMoGXoht/lights/");
+        baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
         baseUrl = baseUrl + lightNum + "/";
         makeRequest(baseUrl);
+
+        // 출력 버튼 동작
+        out = (FloatingActionButton)rootView.findViewById(R.id.output);
+        out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), OutputActivity.class);
+                intent.putExtra("output", jsonForOut.toString());
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }
@@ -85,6 +194,7 @@ public class DetailFragment extends Fragment {
      * @throws JSONException
      */
     private void processResponse(JSONObject response) throws JSONException {
+        // Data 항목 바인딩
         JSONObject state = response.getJSONObject("state");
         JSONObject usingData = new JSONObject();
         usingData.put("on", state.getString("on"));
@@ -92,9 +202,7 @@ public class DetailFragment extends Fragment {
         usingData.put("hue", state.getString("hue"));
         usingData.put("sat", state.getString("sat"));
 
-        name.setText(response.getString("name"));
-        provider.setText(response.getString("manufacturername"));
-        category.setText("lights");
         data.setText(usingData.toString());
     }
+
 }
