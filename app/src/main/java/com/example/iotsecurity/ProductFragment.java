@@ -70,7 +70,7 @@ public class ProductFragment extends Fragment {
         });
 
         requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
-        String baseUrl = String.format("http://192.168.0.13/api/CNvVAzMQxpTl2FNN12ipOCvqxbA7X0HEbMoGXoht/lights/");
+        String baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
         makeRequest(baseUrl);
 
         /**

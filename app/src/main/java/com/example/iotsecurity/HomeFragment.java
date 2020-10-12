@@ -120,10 +120,11 @@ public class HomeFragment extends Fragment {
             Product light;
             String name = lightJson.getString("name");
             String provider = lightJson.getString("manufacturername");
+            String modelId = lightJson.getString("modelid");
             String category = "lights";
             String connection = "wifi";
             boolean display = false;
-            light = new Product(name, provider, category, connection, display);
+            light = new Product(name, provider, category, connection, display, modelId);
         }
         textView.setText(response.toString()); // 테스트화용 텍스트뷰
     }

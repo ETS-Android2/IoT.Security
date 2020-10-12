@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
 
         requestQueue = Volley.newRequestQueue(this.getApplicationContext());
-        String baseUrl = String.format("http://192.168.0.13/api/CNvVAzMQxpTl2FNN12ipOCvqxbA7X0HEbMoGXoht/lights/");
+        String baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
         makeRequest(baseUrl);
 
         pager = findViewById(R.id.pager);
@@ -116,10 +116,12 @@ public class MainActivity extends AppCompatActivity {
             Product light = new Product();
             String name = lightJson.getString("name");
             String provider = lightJson.getString("manufacturername");
+            String modelId = lightJson.getString("modelid");
             String category = "lights";
             String connection = "wifi";
             boolean display = false;
-            light = new Product(name, provider, category, connection, display);
+
+            light = new Product(name, provider, category, connection, display, modelId);
             mDatabase.child(""+i).setValue(light);
         }
     }
