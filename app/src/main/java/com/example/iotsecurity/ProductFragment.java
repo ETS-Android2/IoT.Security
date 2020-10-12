@@ -129,7 +129,7 @@ public class ProductFragment extends Fragment {
             light.category = "lights";
             light.score = 27.34;
             adapter.addItem(light);
-            mDatabase.child(""+i).setValue(light);
+//            mDatabase.child(""+i).setValue(light);
         }
 
         adapter.notifyDataSetChanged();

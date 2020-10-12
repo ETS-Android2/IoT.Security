@@ -25,6 +25,7 @@ public class Product implements Serializable {
     public boolean display;     // 디스플레이 유무
 
     public String OCFspec = "ocf.1.3.0";    // 값 고정
+    public String piId;         // 장치 id
     public String modelId;      // 모델 번호
     public String resourceType;
     public String serviceType;  // 서비스 타입
@@ -34,7 +35,9 @@ public class Product implements Serializable {
     public boolean portable;    // 장치 이동성
     public boolean agree;       // 동의 필요 여부
     public String deviceType;    // 디바이스 타입
-
+    public String productName;  // 제품
+    public int always;          // 수집 방법 -> 1:수집안함, 2:조건수집, 3:상시수집
+    public String infoType;     // 정보 형태
 
     public String description = " ";
 

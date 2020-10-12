@@ -43,8 +43,9 @@ public class DetailFragment extends Fragment {
         provider = rootView.findViewById(R.id.provider_content);
         data = rootView.findViewById(R.id.data_content);
 
-        // 현재 전구의 JSON 데이터 받아옴
+        // 몇번째 전구인지 받아옴
         String lightNum = product.name.replaceAll("[^0-9]", "");
+
         requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
         baseUrl = String.format("http://192.168.0.13/api/CNvVAzMQxpTl2FNN12ipOCvqxbA7X0HEbMoGXoht/lights/");
         baseUrl = baseUrl + lightNum + "/";
@@ -91,11 +92,9 @@ public class DetailFragment extends Fragment {
         usingData.put("hue", state.getString("hue"));
         usingData.put("sat", state.getString("sat"));
 
-        // response.lenth()가 1이 작게 나옴! 왜?!?!
         name.setText(response.getString("name"));
         provider.setText(response.getString("manufacturername"));
         category.setText("lights");
         data.setText(usingData.toString());
-
     }
 }

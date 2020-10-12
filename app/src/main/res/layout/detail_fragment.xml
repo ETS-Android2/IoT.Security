@@ -52,7 +52,6 @@
             </LinearLayout>
 
             <View
-                android:id="@+id/divider1"
                 android:layout_marginTop="7dp"
                 android:layout_marginBottom="7dp"
                 android:layout_width="match_parent"
@@ -91,7 +90,6 @@
             </LinearLayout>
 
             <View
-                android:id="@+id/divider2"
                 android:layout_marginTop="7dp"
                 android:layout_marginBottom="7dp"
                 android:layout_width="match_parent"
@@ -130,7 +128,6 @@
             </LinearLayout>
 
             <View
-                android:id="@+id/divider3"
                 android:layout_marginTop="7dp"
                 android:layout_marginBottom="7dp"
                 android:layout_width="match_parent"
@@ -161,7 +158,7 @@
                         android:text="put Something" />
                 </LinearLayout>
                 <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/checkbox"
+                    android:id="@+id/checkbox4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp">
@@ -169,13 +166,277 @@
             </LinearLayout>
 
             <View
-                android:id="@+id/divider"
                 android:layout_marginTop="7dp"
                 android:layout_marginBottom="7dp"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#7E7E7E" />
 
+
+            <!--제품명-->
+            <LinearLayout
+                android:id="@+id/product_name_tap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/product_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Product Name" />
+                    <TextView
+                        android:id="@+id/product_name_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E" />
+
+            <!--모델번호-->
+            <LinearLayout
+                android:id="@+id/model_id_tap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/model_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Model ID" />
+                    <TextView
+                        android:id="@+id/model_id_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E" />
+
+            <!--제품명-->
+            <LinearLayout
+                android:id="@+id/product_name_tap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/product_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Product Name" />
+                    <TextView
+                        android:id="@+id/product_name_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E" />
+
+            <!--제품명-->
+            <LinearLayout
+                android:id="@+id/product_name_tap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/product_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Product Name" />
+                    <TextView
+                        android:id="@+id/product_name_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E" />
+
+            <!--제품명-->
+            <LinearLayout
+                android:id="@+id/product_name_tap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/product_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Product Name" />
+                    <TextView
+                        android:id="@+id/product_name_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E" />
+
+            <!--제품명-->
+            <LinearLayout
+                android:id="@+id/product_name_tap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/product_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Product Name" />
+                    <TextView
+                        android:id="@+id/product_name_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E" />
+
+            <!--제품명-->
+            <LinearLayout
+                android:id="@+id/product_name_tap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/product_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Product Name" />
+                    <TextView
+                        android:id="@+id/product_name_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="put Something" />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp">
+                </androidx.appcompat.widget.AppCompatCheckBox>
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#7E7E7E" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

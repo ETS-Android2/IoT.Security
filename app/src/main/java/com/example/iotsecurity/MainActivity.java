@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.icu.util.DateInterval;
 import android.os.Bundle;
 
 import com.android.volley.Request;
@@ -22,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 
@@ -113,15 +115,35 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 1; i<=response.length(); i++) {
             lightJson = response.getJSONObject(String.valueOf(i));
-            Product light = new Product();
+            Product light;
             String name = lightJson.getString("name");
             String provider = lightJson.getString("manufacturername");
             String modelId = lightJson.getString("modelid");
-            String category = "lights";
-            String connection = "wifi";
-            boolean display = false;
+            String piId = lightJson.getString("productid");
+            String productName = lightJson.getString("productname");
 
-            light = new Product(name, provider, category, connection, display, modelId);
+            light = new Product();
+            light.name = name;
+            light.provider = provider;
+            light.modelId = modelId;
+            light.piId = piId;
+            light.productName = productName;
+
+            light.category = "lights";
+            light.connection = "wifi";
+            light.display = false;
+            light.portable = false;
+            light.agree = false;
+            light.deviceType = "actuator";
+            light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
+                    "oic.r.light.raptime, oic.r.switch.binary";
+            light.serviceType = "will be from csv";
+            light.cycle = new DateInterval(20200901, 20201010);
+            light.period = 0;
+            light.always = 2;
+            light.infoType = "will be from csv too";
+            light.score = 27.34;
+
             mDatabase.child(""+i).setValue(light);
         }
     }
