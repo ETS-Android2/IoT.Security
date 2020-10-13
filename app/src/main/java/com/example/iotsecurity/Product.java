@@ -30,7 +30,7 @@ public class Product implements Serializable {
     public String resourceType;
     public String serviceType;  // 서비스 타입
     public Map<String, String> data; // 데이터
-    public DateInterval cycle;      // 수집 주기
+    public String cycle;      // 수집 주기
     public long period;         // 연결 횟수 (count)
     public boolean portable;    // 장치 이동성
     public boolean agree;       // 동의 필요 여부

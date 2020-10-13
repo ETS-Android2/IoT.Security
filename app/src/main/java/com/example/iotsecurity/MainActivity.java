@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
             light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
                     "oic.r.light.raptime, oic.r.switch.binary";
             light.serviceType = "will be from csv";
-            light.cycle = new DateInterval(20200901, 20201010);
+            light.cycle = "20200901 - 20201010";
             light.period = 0;
             light.always = 2;
             light.infoType = "will be from csv too";

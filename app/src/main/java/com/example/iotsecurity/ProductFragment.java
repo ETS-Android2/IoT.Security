@@ -73,27 +73,27 @@ public class ProductFragment extends Fragment {
         String baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
         makeRequest(baseUrl);
 
-        /**
-         * DB에서 데이터 수신 테스트
-         * Value Event Listener
-         */
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Product temp;
-                for(int i=1; i<=snapshot.getChildrenCount(); i++) {
-                    temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
-                    Log.d("tmp.name : ",String.valueOf(temp.score));
-                    adapter.addItem(temp);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+//        /**
+//         * DB에서 데이터 수신 테스트
+//         * Value Event Listener
+//         */
+//        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+//        mDatabase.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                Product temp;
+//                for(int i=1; i<=snapshot.getChildrenCount(); i++) {
+//                    temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
+//                    Log.d("tmp.name : ",String.valueOf(temp.score));
+//                    adapter.addItem(temp);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
         recyclerView.setAdapter(adapter);
         return rootView;
     }

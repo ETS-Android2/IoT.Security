@@ -27,6 +27,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * Control Panel
+ * 전구를 제어하는 기능
+ * progress bar 통해 제어
+ *
+ * ver. 2020.09.29 : 제어 기능 동작 확인
+ * 개선점 : 제어 완료 후 db에 저장, cycle/period 계산
+ * */
 public class ControlFragment extends Fragment {
     SeekBar intensitySeekBar, saturationSeekBar, hueSeekBar;
     PieChart pieChart;
