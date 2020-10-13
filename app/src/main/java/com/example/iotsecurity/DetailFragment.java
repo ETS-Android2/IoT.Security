@@ -44,6 +44,7 @@ public class DetailFragment extends Fragment {
     FloatingActionButton out;
     Product product, temp = null;
     String baseUrl;
+    private String lightNum;
 
     JSONObject jsonForOut = new JSONObject();
 
@@ -82,7 +83,7 @@ public class DetailFragment extends Fragment {
         checkPiId = rootView.findViewById(R.id.checkbox_pi_id);
 
         // 몇번째 전구인지 받아옴
-        final String lightNum = product.name.replaceAll("[^0-9]", "");
+        lightNum = product.name.replaceAll("[^0-9]", "");
 
         // DB에서 해당 전구 불러옴
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
@@ -120,19 +121,32 @@ public class DetailFragment extends Fragment {
                         jsonForOut.put("name", temp.name);
                     if(checkProvider.isChecked())
                         jsonForOut.put("provider", temp.provider);
-                    jsonForOut.put("category", temp.category);
-                    jsonForOut.put("modelId", temp.modelId);
-                    jsonForOut.put("piId", temp.piId);
-                    jsonForOut.put("productName", temp.productName);
-                    jsonForOut.put("connection", temp.connection);
-                    jsonForOut.put("display", String.valueOf(temp.display));
-                    jsonForOut.put("portable", String.valueOf(temp.portable));
-                    jsonForOut.put("agree", String.valueOf(temp.agree));
-                    jsonForOut.put("deviceType", temp.deviceType);
-                    jsonForOut.put("serviceType", temp.serviceType);
-                    jsonForOut.put("cycle", temp.cycle);
-                    jsonForOut.put("period", String.valueOf(temp.period));
-                    jsonForOut.put("infoType", temp.infoType);
+                    if(checkCategory.isChecked())
+                        jsonForOut.put("category", temp.category);
+                    if(checkModelId.isChecked())
+                        jsonForOut.put("modelId", temp.modelId);
+                    if(checkPiId.isChecked())
+                        jsonForOut.put("piId", temp.piId);
+                    if(checkProductName.isChecked())
+                        jsonForOut.put("productName", temp.productName);
+                    if(checkConnection.isChecked())
+                        jsonForOut.put("connection", temp.connection);
+                    if(checkDisplay.isChecked())
+                        jsonForOut.put("display", String.valueOf(temp.display));
+                    if(checkPortable.isChecked())
+                        jsonForOut.put("portable", String.valueOf(temp.portable));
+                    if(checkAgree.isChecked())
+                        jsonForOut.put("agree", String.valueOf(temp.agree));
+                    if(checkDeviceType.isChecked())
+                        jsonForOut.put("deviceType", temp.deviceType);
+                    if(checkServiceType.isChecked())
+                        jsonForOut.put("serviceType", temp.serviceType);
+                    if(checkCycle.isChecked())
+                        jsonForOut.put("cycle", temp.cycle);
+                    if(checkPeriod.isChecked())
+                        jsonForOut.put("period", String.valueOf(temp.period));
+                    if(checkInfoType.isChecked())
+                        jsonForOut.put("infoType", temp.infoType);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -190,6 +204,8 @@ public class DetailFragment extends Fragment {
     /**
      * url로 부터 받은 json 객체를 ui에 맞게 적용
      * Data의 경우 "state" 라는 객체 속에 포함되어 있으므로 따로 저장
+     *
+     * 개선점 : request가 아닌 DB에서 로드
      * @param response = url 로 부터 받은 json 객체
      * @throws JSONException
      */
