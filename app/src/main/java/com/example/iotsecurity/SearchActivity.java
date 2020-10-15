@@ -25,14 +25,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
-public class SearchActivity<i> extends Fragment {
+public class SearchActivity<i> extends AppCompatActivity {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.activity_search2, container, false);
+        setContentView(R.layout.activity_search2);
 
-        TextView tv = rootView.findViewById(R.id.tv);
+        TextView tv = findViewById(R.id.tv);
         try {
             readResourceInfo();
             readDeviceInfo();
@@ -43,7 +43,6 @@ public class SearchActivity<i> extends Fragment {
         }
 
 
-        return rootView;
     }
     //csv파일을 읽어서 devices에 정보 생성
     private ArrayList<Resource> resources = new ArrayList<Resource>();

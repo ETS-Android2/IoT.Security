@@ -14,8 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".SearchActivity2"></activity>
         <activity android:name=".OutputActivity" />
         <activity android:name=".AddByWifiActivity" />
+        <activity android:name=".SearchActivity" />
         <activity android:name=".ProductDetail" />
         <activity android:name=".MainActivity">
             <intent-filter>

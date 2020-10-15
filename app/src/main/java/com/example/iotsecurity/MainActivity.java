@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             light.infoType = "will be from csv too";
             light.score = 27.34;
 
-            mDatabase.child(""+i).setValue(light);
+//            mDatabase.child(""+i).setValue(light);
         }
     }
 }

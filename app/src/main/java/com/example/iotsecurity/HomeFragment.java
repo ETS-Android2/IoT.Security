@@ -55,9 +55,9 @@ public class HomeFragment extends Fragment {
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Product temp = snapshot.child("1").getValue(Product.class);
-
-                textView.setText(temp.name);
+//                Product temp = snapshot.child("1").getValue(Product.class);
+//
+//                textView.setText(temp.name);
             }
 
             @Override

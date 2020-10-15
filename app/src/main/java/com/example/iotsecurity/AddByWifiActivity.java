@@ -25,6 +25,8 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -42,12 +44,14 @@ public class AddByWifiActivity extends AppCompatActivity {
     TextView isWifiText, pushButtonTxt;
     ImageView pushButtonImg;
 
-    JSONObject errorJson = new JSONObject();;
+    public DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_by_wifi);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
 
         pushButtonImg = findViewById(R.id.push_button_img);
         pushButtonTxt = findViewById(R.id.push_button_txt);
@@ -91,7 +95,7 @@ public class AddByWifiActivity extends AppCompatActivity {
         return false;
     }
 
-    private void makePostRequest(String baseUrl) {
+    private void makePostRequest(final String baseUrl) {
         JSONObject userDevice = new JSONObject();
         try {
             userDevice.put("devicetype","cellphone");
@@ -108,13 +112,14 @@ public class AddByWifiActivity extends AppCompatActivity {
 
                         try {
                             JSONObject responseJson = response.getJSONObject(0);
-                            Log.d("!!!!!!!!!success check ", responseJson.toString());
                             if(responseJson.has("success")) {
                                 responseJson = responseJson.getJSONObject("success");
                                 String userName = responseJson.getString("username");
+                                String getUrl = baseUrl + userName + "/";
 
+                                makeGetRequest(getUrl);
                             }
-                            else
+                            else if(responseJson.has("error"))
                                 Toast.makeText(getApplicationContext(), "Push The Link Button on Hub!", Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -127,32 +132,77 @@ public class AddByWifiActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Push The Link Button on Hub!", Toast.LENGTH_SHORT).show();
                     }
                 });
-//        JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, baseUrl, userDevice.toString(), new Response.Listener<JSONArray>() {
-//            @Override
-//            public void onResponse(JSONArray response) {
-//                Log.d("!!!!!!!!!!!!success check ", response.toString());
-////                try {
-////                    String userName = response.get(0).toString();
-////                    Toast.makeText(getApplicationContext(), userName, Toast.LENGTH_SHORT);
-////                } catch (JSONException e) {
-////                    e.printStackTrace();
-////                }
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Toast.makeText(getApplicationContext(), "Push The Link Button on Hub!", Toast.LENGTH_SHORT).show();
-//            }
-//        }) {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                HashMap<String, String> userDevice = new HashMap<>();
-//                userDevice.put("devicetype", "cellphone");
-//                return userDevice;
-//            }
-//        };
+
         request.setShouldCache(false);
         // 조작이 끝났으므로 url 초기화
         requestQueue.add(request);
+    }
+
+    private void makeGetRequest(String baseUrl){
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl,null,  new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    processResponse(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println(error.toString());
+            }
+        });
+        request.setShouldCache(false);
+        requestQueue.add(request);
+    }
+
+    private void processResponse(JSONObject response) throws JSONException {
+        JSONObject lightList = response.getJSONObject("lights");
+        JSONObject lightJson;
+        Product light = new Product();
+        boolean isNothing = true;       // 감지되는 제품이 있는지?
+        for (int i = 1; i<lightList.length(); i++) {
+            lightJson = lightList.getJSONObject(String.valueOf(i));
+            if(lightJson.getJSONObject("state").getBoolean("reachable")) {
+                isNothing = false;
+
+                String name = lightJson.getString("name");
+                String provider = lightJson.getString("manufacturername");
+                String modelId = lightJson.getString("modelid");
+                String piId = lightJson.getString("productid");
+                String productName = lightJson.getString("productname");
+
+                light = new Product();
+                light.name = name;
+                light.provider = provider;
+                light.modelId = modelId;
+                light.piId = piId;
+                light.productName = productName;
+
+                light.category = "전구";
+                light.connection = null;
+                light.display = false;
+                light.portable = false;
+                light.agree = false;
+                light.deviceType = null;
+                light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
+                        "oic.r.light.raptime, oic.r.switch.binary";
+                light.serviceType = "";
+                light.cycle = "20200901 - 20201010";
+                light.period = 0;
+                light.always = 0;
+                light.infoType = null;
+                light.score = -1;
+
+                Intent intent = new Intent(this, SearchActivity2.class);
+                intent.putExtra("product", light);
+                startActivity(intent);
+                mDatabase.child("" + i).setValue(light);
+            }
+        }
+        if(isNothing)
+            Toast.makeText(this, "Nothing Detected", Toast.LENGTH_SHORT).show();
     }
 }
