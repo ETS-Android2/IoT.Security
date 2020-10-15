@@ -44,7 +44,6 @@ public class DetailFragment extends Fragment {
     FloatingActionButton out;
     Product product, temp = null;
     String baseUrl;
-    private String lightNum;
 
     JSONObject jsonForOut = new JSONObject();
 
@@ -80,10 +79,25 @@ public class DetailFragment extends Fragment {
         checkProvider = rootView.findViewById(R.id.checkbox_provider);
         checkData = rootView.findViewById(R.id.checkbox_data);
         checkModelId = rootView.findViewById(R.id.checkbox_model_id);
+        checkAlways = rootView.findViewById(R.id.checkbox_always);
         checkPiId = rootView.findViewById(R.id.checkbox_pi_id);
+        checkProductName = rootView.findViewById(R.id.checkbox_product_name);
+        checkConnection = rootView.findViewById(R.id.checkbox_connection);
+        checkDisplay = rootView.findViewById(R.id.checkbox_display);
+        checkPortable = rootView.findViewById(R.id.checkbox_portable);
+        checkAgree = rootView.findViewById(R.id.checkbox_agree);
+        checkDeviceType = rootView.findViewById(R.id.checkbox_device_type);
+        checkServiceType = rootView.findViewById(R.id.checkbox_service_type);
+        checkAgree = rootView.findViewById(R.id.checkbox_agree);
+        checkDeviceType = rootView.findViewById(R.id.checkbox_device_type);
+        checkServiceType = rootView.findViewById(R.id.checkbox_service_type);
+        checkCycle = rootView.findViewById(R.id.checkbox_cycle);
+        checkPeriod = rootView.findViewById(R.id.checkbox_period);
+        checkAlways = rootView.findViewById(R.id.checkbox_always);
+        checkInfoType = rootView.findViewById(R.id.checkbox_info_type);
 
         // 몇번째 전구인지 받아옴
-        lightNum = product.name.replaceAll("[^0-9]", "");
+        final String lightNum = product.name.replaceAll("[^0-9]", "");
 
         // DB에서 해당 전구 불러옴
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
@@ -147,6 +161,8 @@ public class DetailFragment extends Fragment {
                         jsonForOut.put("period", String.valueOf(temp.period));
                     if(checkInfoType.isChecked())
                         jsonForOut.put("infoType", temp.infoType);
+                    if(checkData.isChecked())
+                        jsonForOut.put("data", temp.data);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -154,7 +170,7 @@ public class DetailFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.w("ERROR!! : ", error.toString());
             }
         });
 

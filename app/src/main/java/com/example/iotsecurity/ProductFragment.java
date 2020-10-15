@@ -1,5 +1,6 @@
 package com.example.iotsecurity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.renderscript.Sampler;
@@ -19,6 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,14 +45,49 @@ public class ProductFragment extends Fragment {
     ProductAdapter adapter;
     RecyclerView recyclerView;
 
+    FloatingActionButton addProductByWifi, openFab, addProductByBluetooth;
+
     static RequestQueue requestQueue;
 
+    // hue api hub 아이피 주소
+    String baseUrl;
+    String addUrl = String.format("http://192.168.0.7/api/");
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.product_fragment, container, false);
 
-
         adapter = new ProductAdapter();
+
+        addProductByBluetooth = rootView.findViewById(R.id.add_by_bluetooth);
+        addProductByBluetooth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        addProductByWifi = rootView.findViewById(R.id.add_by_wifi);
+        addProductByWifi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AddByWifiActivity.class);
+                intent.putExtra("baseUrl", addUrl);
+                startActivity(intent);
+            }
+        });
+
+        openFab = rootView.findViewById(R.id.add_product);
+        openFab.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onClick(View v) {
+                addProductByWifi.setVisibility(View.VISIBLE);
+                addProductByWifi.setClickable(true);
+                addProductByBluetooth.setVisibility(View.VISIBLE);
+                addProductByBluetooth.setClickable(true);
+            }
+        });
+
 
         recyclerView= rootView.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
@@ -70,7 +107,7 @@ public class ProductFragment extends Fragment {
         });
 
         requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
-        String baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
+        baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
         makeRequest(baseUrl);
 
 //        /**

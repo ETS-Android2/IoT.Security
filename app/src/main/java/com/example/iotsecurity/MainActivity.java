@@ -16,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -57,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
         // home fragment
         HomeFragment homeFragment = new HomeFragment();
         adapter.addItem(homeFragment);
+
+//        // search activity(as fragement)
+//        SearchActivity searchActivityAsFragment = new SearchActivity();
+//        adapter.addItem(searchActivityAsFragment);
 
         // adapter 설정
         pager.setAdapter(adapter);

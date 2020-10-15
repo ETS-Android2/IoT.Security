@@ -93,7 +93,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void makeRequest() {
-        String baseUrl = String.format("http://192.168.0.13/api/6dopn9py8UJkMiStzn0ps0c5ReQEy8kbeIQea6iY/lights");
+        String baseUrl = String.format("http://192.168.0.7/api/6dopn9py8UJkMiStzn0ps0c5ReQEy8kbeIQea6iY/lights");
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl,null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

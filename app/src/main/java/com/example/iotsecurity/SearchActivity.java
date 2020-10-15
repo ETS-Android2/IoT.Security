@@ -8,9 +8,13 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,29 +25,31 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
-public class SearchActivity<i> extends AppCompatActivity {
+public class SearchActivity<i> extends Fragment {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search2);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.activity_search2, container, false);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        TextView tv = rootView.findViewById(R.id.tv);
+        try {
+            readResourceInfo();
+            readDeviceInfo();
+            Log.d("!!!!!resource idx 1   ", String.valueOf(resources.get(1)));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return rootView;
     }
     //csv파일을 읽어서 devices에 정보 생성
     private ArrayList<Resource> resources = new ArrayList<Resource>();
     private void readResourceInfo() throws IOException {
         InputStream is  = getResources().openRawResource(R.raw.resource);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("MS949")));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("EUC-KR")));
         String line="";
         try {
             while ((line = reader.readLine()) != null) {
@@ -78,7 +84,7 @@ public class SearchActivity<i> extends AppCompatActivity {
     private ArrayList<DeviceInfo2> devices = new ArrayList<DeviceInfo2>();
     private void readDeviceInfo() throws IOException {
         InputStream is  = getResources().openRawResource(R.raw.hue);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("MS949")));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("EUC-KR")));
         String line="";
         try {
             while ((line = reader.readLine()) != null) {

@@ -6,6 +6,39 @@
     android:layout_height="match_parent"
     android:paddingTop="10dp"
     tools:context=".ProductFragment">
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="30dp">
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_by_wifi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:padding="0dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="110dp"
+        android:visibility="invisible"
+        android:clickable="false"
+        >
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_by_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:padding="0dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="190dp"
+        android:visibility="invisible"
+        android:clickable="false"
+        >
+
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
     <ScrollView
         android:layout_width="match_parent"
