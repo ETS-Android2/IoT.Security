@@ -3,5 +3,6 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/app/src/main/res/raw/hue.csv" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/raw/resource.csv" charset="EUC-KR" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/raw/resources.csv" charset="EUC-KR" />
   </component>
 </project>

@@ -1,5 +1,6 @@
 package com.example.iotsecurity;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,14 +89,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.myViewHo
     public myViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View itemView = inflater.inflate(R.layout.product_item, parent, false);
+        myViewHolder mViewHolder = new myViewHolder(itemView);
 
-        return new myViewHolder(itemView);
+        return mViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
         Product item = products.get(position);
         holder.setItem(item);
+
     }
 
     @Override

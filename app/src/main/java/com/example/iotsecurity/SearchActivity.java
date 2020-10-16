@@ -6,6 +6,8 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -14,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -26,24 +29,135 @@ import java.util.Collections;
 import java.util.Vector;
 
 public class SearchActivity<i> extends AppCompatActivity {
+    @Nullable
+//    @Override
+//    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        View rootView = inflater.inflate(R.layout.activity_search2, container, false);
+//
+//        TextView tv = rootView.findViewById(R.id.tv);
+//        try {
+//            readResourceInfo();
+//            readDeviceInfo();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return rootView;
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search2);
 
+        // 현재 저장되어 있는 제품의 data
+        Product product = (Product)getIntent().getExtras().get("product");
+        Vector<Double> productVector = getProductVector(product);
+
         TextView tv = findViewById(R.id.tv);
         try {
             readResourceInfo();
             readDeviceInfo();
-            Log.d("!!!!!resource idx 1   ", String.valueOf(resources.get(1)));
-
+            devices.get(0);
+            CalculateCos(productVector, devices);
+            ArrayList<Product> similarProducts = top5Print(devices);
+            Log.d("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", devices.get(0).getName());
+            makeProductRecyclerView(similarProducts);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
     }
+
+    /**
+     * Problem ver 2020.10.16 : devices에서는 순위가 제대로 나오지만 top5List로 옮기면 제대로 나오지 않음.
+     * -> 참조에서 생기는 문제이므로 메소드 구조(파라미터, 반환값, void 등)를 변경할 필요 있음
+     *
+     *
+     * 제품 데이터를 받아서 리사이클러 뷰로 출력
+     * 리사이클러뷰에는 클릭 리스너
+     * 아이템 클릭시 해당 리소스를 현재 Product내용과 병합 (병합할 때 제품 정보에 비어있는 값만 채워 넣음)
+     * 병합 후에는 DB에 저장
+     * 이 저장된 Product 데이터는 ProductFragment에서 출력.
+     * @param similarProducts recycler view로 띄울 제품에 대한 데이터가 담겨있는 리스트
+     */
+    private void makeProductRecyclerView(ArrayList<Product> similarProducts) {
+        for(int i=0; i<similarProducts.size(); i++) {
+            Log.d("!!@!@!@!@!@!@!@!@!@@!@!@!!@!@ " , similarProducts.get(i).category);
+
+        }
+    }
+
+    private Vector<Double> getProductVector(Product product) {
+        Vector<Double> productVec = new Vector<Double>(13);
+        if(product.provider.equals("Philips"))
+            productVec.addElement((Double)1.0);
+        else
+            productVec.addElement((Double)0.0);
+
+        if(product.category.equals("전구"))
+            productVec.addElement((Double)1.0);
+        else
+            productVec.addElement((Double)0.0);
+
+        if(product.category.equals("조명"))
+            productVec.addElement((Double)1.0);
+        else
+            productVec.addElement((Double)0.0);
+
+        // 장치 이동성 true:이동형, fasle:고정형
+        if(product.portable) {
+            productVec.addElement((Double)0.0);
+            productVec.addElement((Double)1.0);
+        }
+        else {
+            productVec.addElement((Double)1.0);
+            productVec.addElement((Double)0.0);
+        }
+
+
+        //연결 방식 wifi, bluetooth, z-wave 순서
+        if(product.connection.contains("wifi"))
+            productVec.addElement((Double) 1.0);
+        else
+            productVec.addElement((Double)0.0);
+        if(product.connection.contains("bluetooth"))
+            productVec.addElement((Double) 1.0);
+        else
+            productVec.addElement((Double)0.0);
+        if(product.connection.contains("z-wave"))
+            productVec.addElement((Double) 1.0);
+        else
+            productVec.addElement((Double)0.0);
+
+        //디바이스 타입 : 스마트장비, 센서, 액츄에이터 순서
+        if(product.deviceType.contains("스마트장비"))
+            productVec.addElement((Double) 1.0);
+        else
+            productVec.addElement((Double)0.0);
+        if(product.deviceType.contains("센서"))
+            productVec.addElement((Double) 1.0);
+        else
+            productVec.addElement((Double)0.0);
+        if(product.deviceType.contains("액츄에이터"))
+            productVec.addElement((Double) 1.0);
+        else
+            productVec.addElement((Double)0.0);
+
+        // 디스플레이 유무 : 있음, 없음 순서
+        if(product.display) {
+            productVec.addElement((Double) 1.0);
+            productVec.addElement((Double) 0.0);
+        }
+        else {
+            productVec.addElement((Double) 0.0);
+            productVec.addElement((Double) 1.0);
+        }
+        return productVec;
+    }
+
     //csv파일을 읽어서 devices에 정보 생성
     private ArrayList<Resource> resources = new ArrayList<Resource>();
     private void readResourceInfo() throws IOException {
@@ -72,7 +186,7 @@ public class SearchActivity<i> extends AppCompatActivity {
                 sample.setDisplay(Integer.parseInt(tokens[11]));
                 sample.setRiskScore(Double.parseDouble(tokens[12]));
                 resources.add(sample);
-                Log.d("SearchActivity", "Just created Resource: "+sample);
+//                Log.d("SearchActivity", "Just created Resource: "+sample);
             }
         } catch (IOException e){
             Log.wtf("Search Activity", "error reading data file on line" + line,e);
@@ -112,7 +226,7 @@ public class SearchActivity<i> extends AppCompatActivity {
                 vector.addElement(Double.parseDouble(tokens[13]));
                 sample.setVector(vector);
                 devices.add(sample);
-                Log.d("SearchActivity", "Just created: "+sample);
+//                Log.d("SearchActivity", "Just created: "+sample);
             }
         } catch (IOException e){
             Log.wtf("Search Activity", "error reading data file on line" + line,e);
@@ -157,30 +271,40 @@ public class SearchActivity<i> extends AppCompatActivity {
         Collections.sort(devices);
     }
     //정렬된 리스트를 사용하여 top5 장치 출력
-    private void top5Print( ArrayList<DeviceInfo2> deviceInfo2s){
+    private ArrayList<Product> top5Print( ArrayList<DeviceInfo2> deviceInfo2s){
         //리스트에 뿌려주는 내용 필요
+        ArrayList<Product> top5 = new ArrayList<Product>();
         for(int i=0; i<5; i++){
-            deviceInfo2s.get(i);
+            top5.add(getIdxDPD(deviceInfo2s.get(i).getIdx()));
         }
         //리스트에서 해당 idx에 대한 클릭을 얻었을 때, 해당 productList의 해당 값의 idx를 얻어서 등록과정 종료
         //devices.get(productList.getIdx("사용자 선택 값"));
+
+        return top5;
     }
     //만약 어떠한 값이 선택되었다고 하면 idx를 기반으로 원본 데이터 객체를 가져옴
-    private void getIdxDPD(int idx){
+    private Product getIdxDPD(int idx){
         Resource r = resources.get(idx);
+        Product p = new Product();
         r.getIdx();
-        r.getCategory();
-        r.getCategory();
-        r.getManufactureName();
-        r.getMovement();
-        r.getConnection();
-        r.getGatheringMethod();
-        r.getServices();
-        r.getDataList();
-        r.getDataType();
-        r.getAgreement();
-        r.getDataType();
-        r.getDisplay();
-        r.getRiskScore();
+        p.name = r.getName();
+        p.category = r.getCategory();
+        p.provider = r.getManufactureName();
+        p.portable = r.getMovement().contains("이동형");
+        p.connection = r.getConnection();
+        if(r.getGatheringMethod().contains("상시수집"))
+            p.always = 3;
+        else if(r.getGatheringMethod().contains("조건수집"))
+            p.always = 2;
+        else
+            p.always = 1;
+        p.serviceType = r.getServices();
+        p.infoType = r.getDataType();
+        p.agree = (r.getAgreement()==1);
+        p.display = (r.getDisplay()==1);
+        p.score = r.getRiskScore();
+
+        Log.d("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", p.name);
+        return p;
     }
 }

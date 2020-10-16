@@ -71,7 +71,9 @@ public class SearchActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+                intent.putExtra("product", product);
                 startActivity(intent);
+                finish();
             }
         });
     }

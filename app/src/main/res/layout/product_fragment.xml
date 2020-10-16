@@ -12,7 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="30dp">
+        android:layout_marginBottom="30dp"
+        android:backgroundTint="#1357be"
+        android:src="@drawable/white_plus_icon">
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_by_wifi"

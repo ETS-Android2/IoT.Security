@@ -71,7 +71,7 @@ public class AddByWifiActivity extends AppCompatActivity {
                     isWifiText.setText("Not Connected");
             }
         });
-        // baseUrl = "http://192.168.0.7/api/"
+        // baseUrl -> "http://192.168.0.7/api/"
         searchProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,23 +182,25 @@ public class AddByWifiActivity extends AppCompatActivity {
                 light.productName = productName;
 
                 light.category = "전구";
-                light.connection = null;
+                light.connection = "wifi";
                 light.display = false;
                 light.portable = false;
                 light.agree = false;
-                light.deviceType = null;
-                light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
-                        "oic.r.light.raptime, oic.r.switch.binary";
+                light.deviceType = "";
+//                light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
+//                        "oic.r.light.raptime, oic.r.switch.binary";
+                light.resourceType = "";
                 light.serviceType = "";
                 light.cycle = "20200901 - 20201010";
                 light.period = 0;
                 light.always = 0;
-                light.infoType = null;
+                light.infoType = "";
                 light.score = -1;
 
                 Intent intent = new Intent(this, SearchActivity2.class);
                 intent.putExtra("product", light);
                 startActivity(intent);
+                finish();
                 mDatabase.child("" + i).setValue(light);
             }
         }

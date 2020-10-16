@@ -30,6 +30,8 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 /**
  * 장치 정보를 받아와서 recyclerView로 장치별로 나눔.
  *
@@ -56,8 +58,11 @@ public class ProductFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.product_fragment, container, false);
 
-        adapter = new ProductAdapter();
 
+
+        /**
+         * 장치 추가 버튼 구현
+         */
         addProductByBluetooth = rootView.findViewById(R.id.add_by_bluetooth);
         addProductByBluetooth.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,10 +93,15 @@ public class ProductFragment extends Fragment {
             }
         });
 
-
+        /**
+         * 리사이클러 뷰 생성
+         */
         recyclerView= rootView.findViewById(R.id.recyclerView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemViewCacheSize(0);
+
+        adapter = new ProductAdapter();
 
         adapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
             @Override
@@ -106,70 +116,33 @@ public class ProductFragment extends Fragment {
             }
         });
 
-        requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
-        baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
-        makeRequest(baseUrl);
-
-//        /**
-//         * DB에서 데이터 수신 테스트
-//         * Value Event Listener
-//         */
-//        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
-//        mDatabase.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                Product temp;
-//                for(int i=1; i<=snapshot.getChildrenCount(); i++) {
-//                    temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
-//                    Log.d("tmp.name : ",String.valueOf(temp.score));
-//                    adapter.addItem(temp);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-        recyclerView.setAdapter(adapter);
-        return rootView;
-    }
-
-    private void makeRequest(String baseUrl){
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl,null,  new Response.Listener<JSONObject>() {
+        /**
+         * DB에서 데이터 수신 테스트
+         * Value Event Listener
+         */
+        final ArrayList<Product> products = new ArrayList<>();
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+        mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    processResponse(response);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Product temp;
+                for(int i=1; i<=snapshot.getChildrenCount(); i++) {
+                    temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
+                    Log.d("tmp.name : ", String.valueOf(temp.score));
+                    products.add(temp);
                 }
+                adapter.setItems(products);
+                adapter.notifyDataSetChanged();
+                recyclerView.setAdapter(adapter);
             }
-        }, new Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println(error.toString());
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
-        request.setShouldCache(false);
-        requestQueue.add(request);
-    }
 
-    private void processResponse(JSONObject response) throws JSONException {
-        JSONObject lightJson;
-        // response.lenth()가 1이 작게 나옴! 왜?!?!
-        for (int i = 1; i<response.length()+1; i++) {
-            lightJson = response.getJSONObject(String.valueOf(i));
-            Product light = new Product();
-            light.name = lightJson.getString("name");
-            light.provider = lightJson.getString("manufacturername");
-            light.category = "lights";
-            light.score = 27.34;
-            adapter.addItem(light);
-//            mDatabase.child(""+i).setValue(light);
-        }
-
-        adapter.notifyDataSetChanged();
+        return rootView;
     }
 
 }
