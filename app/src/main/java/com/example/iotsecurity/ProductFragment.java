@@ -117,7 +117,6 @@ public class ProductFragment extends Fragment {
         });
 
         /**
-         * DB에서 데이터 수신 테스트
          * Value Event Listener
          */
         final ArrayList<Product> products = new ArrayList<>();
@@ -130,6 +129,7 @@ public class ProductFragment extends Fragment {
                     temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
                     Log.d("tmp.name : ", String.valueOf(temp.score));
                     products.add(temp);
+                    adapter.addItem(temp);
                 }
                 adapter.setItems(products);
                 adapter.notifyDataSetChanged();

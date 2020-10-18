@@ -46,6 +46,7 @@ public class AddByWifiActivity extends AppCompatActivity {
 
     public DatabaseReference mDatabase;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -199,6 +200,7 @@ public class AddByWifiActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(this, SearchActivity2.class);
                 intent.putExtra("product", light);
+                intent.putExtra("productNum", i);
                 startActivity(intent);
                 finish();
                 mDatabase.child("" + i).setValue(light);

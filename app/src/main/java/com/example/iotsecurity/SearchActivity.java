@@ -5,12 +5,16 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,42 +33,61 @@ import java.util.Collections;
 import java.util.Vector;
 
 public class SearchActivity<i> extends AppCompatActivity {
-    @Nullable
-//    @Override
-//    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        View rootView = inflater.inflate(R.layout.activity_search2, container, false);
-//
-//        TextView tv = rootView.findViewById(R.id.tv);
-//        try {
-//            readResourceInfo();
-//            readDeviceInfo();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return rootView;
-//    }
+    RecyclerView recyclerView = null;
+    ProductAdapter adapter;
+
+    DatabaseReference mDatabase;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search2);
 
+        String productNum = getIntent().getExtras().get("productNum").toString();
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products").child(productNum);
+
+        /**
+         * 리사이클러 뷰 생성
+         */
+        recyclerView = findViewById(R.id.recyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this.getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemViewCacheSize(0);
+        adapter = new ProductAdapter();
+
+        adapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+
+                /**
+                 * 채워 넣을 값 선택하면 넣어짐
+                 * 어떤식으로 선택할지
+                 * 월요일에 논의 후 적용
+                 */
+//                mDatabase.setValue(adapter.getItem(position));
+            }
+        });
         // 현재 저장되어 있는 제품의 data
         Product product = (Product)getIntent().getExtras().get("product");
         Vector<Double> productVector = getProductVector(product);
 
         TextView tv = findViewById(R.id.tv);
+
+        ArrayList<Resource> resourceMain;
+        ArrayList<DeviceInfo2> deviceMain;
         try {
-            readResourceInfo();
-            readDeviceInfo();
-            devices.get(0);
-            CalculateCos(productVector, devices);
-            ArrayList<Product> similarProducts = top5Print(devices);
-            Log.d("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", devices.get(0).getName());
-            makeProductRecyclerView(similarProducts);
+            resourceMain = readResourceInfo();
+            deviceMain = readDeviceInfo();
+
+            ArrayList<DeviceInfo2> sortedDeviceMain = CalculateCos(productVector, deviceMain);
+            Collections.sort(sortedDeviceMain);
+
+            ArrayList<Product> similarProducts = top5Print(sortedDeviceMain, resourceMain);
+            tv.setText(similarProducts.get(0).name);
+
+            adapter.setItems(similarProducts);
+            adapter.notifyDataSetChanged();
+            recyclerView.setAdapter(adapter);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -72,23 +95,13 @@ public class SearchActivity<i> extends AppCompatActivity {
     }
 
     /**
-     * Problem ver 2020.10.16 : devices에서는 순위가 제대로 나오지만 top5List로 옮기면 제대로 나오지 않음.
-     * -> 참조에서 생기는 문제이므로 메소드 구조(파라미터, 반환값, void 등)를 변경할 필요 있음
-     *
-     *
      * 제품 데이터를 받아서 리사이클러 뷰로 출력
      * 리사이클러뷰에는 클릭 리스너
      * 아이템 클릭시 해당 리소스를 현재 Product내용과 병합 (병합할 때 제품 정보에 비어있는 값만 채워 넣음)
      * 병합 후에는 DB에 저장
      * 이 저장된 Product 데이터는 ProductFragment에서 출력.
-     * @param similarProducts recycler view로 띄울 제품에 대한 데이터가 담겨있는 리스트
      */
-    private void makeProductRecyclerView(ArrayList<Product> similarProducts) {
-        for(int i=0; i<similarProducts.size(); i++) {
-            Log.d("!!@!@!@!@!@!@!@!@!@@!@!@!!@!@ " , similarProducts.get(i).category);
 
-        }
-    }
 
     private Vector<Double> getProductVector(Product product) {
         Vector<Double> productVec = new Vector<Double>(13);
@@ -159,15 +172,16 @@ public class SearchActivity<i> extends AppCompatActivity {
     }
 
     //csv파일을 읽어서 devices에 정보 생성
-    private ArrayList<Resource> resources = new ArrayList<Resource>();
-    private void readResourceInfo() throws IOException {
+    private ArrayList readResourceInfo() throws IOException {
+        ArrayList<Resource> resources = new ArrayList<Resource>();
         InputStream is  = getResources().openRawResource(R.raw.resource);
         BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("EUC-KR")));
         String line="";
         try {
+            int idx = 0;
             while ((line = reader.readLine()) != null) {
                 //Split by ','
-                int idx = 0;
+
                 String[] tokens = line.split(",");
                 Resource sample = new Resource();
                 //제품명 얻기
@@ -186,23 +200,25 @@ public class SearchActivity<i> extends AppCompatActivity {
                 sample.setDisplay(Integer.parseInt(tokens[11]));
                 sample.setRiskScore(Double.parseDouble(tokens[12]));
                 resources.add(sample);
-//                Log.d("SearchActivity", "Just created Resource: "+sample);
             }
         } catch (IOException e){
             Log.wtf("Search Activity", "error reading data file on line" + line,e);
         }
+
+        return resources;
     }
 
     //csv파일을 읽어서 devices에 정보 생성
-    private ArrayList<DeviceInfo2> devices = new ArrayList<DeviceInfo2>();
-    private void readDeviceInfo() throws IOException {
+    private ArrayList<DeviceInfo2> readDeviceInfo() throws IOException {
+        ArrayList<DeviceInfo2> devices = new ArrayList<DeviceInfo2>();
         InputStream is  = getResources().openRawResource(R.raw.hue);
         BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("EUC-KR")));
         String line="";
         try {
+            int idx = 0;
             while ((line = reader.readLine()) != null) {
                 //Split by ','
-                int idx = 0;
+
                 String[] tokens = line.split(",");
                 DeviceInfo2 sample = new DeviceInfo2();
                 //제품명 얻기
@@ -226,11 +242,11 @@ public class SearchActivity<i> extends AppCompatActivity {
                 vector.addElement(Double.parseDouble(tokens[13]));
                 sample.setVector(vector);
                 devices.add(sample);
-//                Log.d("SearchActivity", "Just created: "+sample);
             }
         } catch (IOException e){
             Log.wtf("Search Activity", "error reading data file on line" + line,e);
         }
+        return devices;
     }
     //코사인 유사도 계산 함수 input 벡터(사용자가 선택한 속성들을 벡터로 변환한 값 v1과 v2 우리가 구축한 devices에 있는 벡터값 유사도 계산)
     private double getScore(Vector<Double> v1, Vector<Double> v2) throws Exception{
@@ -256,8 +272,8 @@ public class SearchActivity<i> extends AppCompatActivity {
     }
 
     //사용자 입력 벡터와 조사 데이터의 유사도계산
-    private void CalculateCos(Vector<Double> vec, ArrayList<DeviceInfo2> devices){
-        for(DeviceInfo2 di : devices){
+    private ArrayList<DeviceInfo2> CalculateCos(Vector<Double> vec, ArrayList<DeviceInfo2> deviceList){
+        for(DeviceInfo2 di : deviceList){
             double score = 0;
             try {
                 score = getScore(vec, di.getVector());
@@ -267,24 +283,30 @@ public class SearchActivity<i> extends AppCompatActivity {
             //DeviceInfo에 유사도 점수 입력
             di.setSimScore(score);
         }
-        //유사도가 높은 장치를 맨위로 하여 정렬 수행
-        Collections.sort(devices);
+
+
+        return deviceList;
     }
     //정렬된 리스트를 사용하여 top5 장치 출력
-    private ArrayList<Product> top5Print( ArrayList<DeviceInfo2> deviceInfo2s){
+    private ArrayList<Product> top5Print(ArrayList<DeviceInfo2> sortedList, ArrayList<Resource> resources){
         //리스트에 뿌려주는 내용 필요
         ArrayList<Product> top5 = new ArrayList<Product>();
         for(int i=0; i<5; i++){
-            top5.add(getIdxDPD(deviceInfo2s.get(i).getIdx()));
+            Product temp = getIdxDPD(sortedList.get(i).getIdx(), resources);
+            Log.d("?????????????????????????", ""+sortedList.get(i).getIdx());
+            top5.add(temp);
+            adapter.addItem(temp);
         }
         //리스트에서 해당 idx에 대한 클릭을 얻었을 때, 해당 productList의 해당 값의 idx를 얻어서 등록과정 종료
         //devices.get(productList.getIdx("사용자 선택 값"));
 
+
+
         return top5;
     }
     //만약 어떠한 값이 선택되었다고 하면 idx를 기반으로 원본 데이터 객체를 가져옴
-    private Product getIdxDPD(int idx){
-        Resource r = resources.get(idx);
+    private Product getIdxDPD(int idx, ArrayList<Resource> reference){
+        Resource r = reference.get(idx);
         Product p = new Product();
         r.getIdx();
         p.name = r.getName();
@@ -303,8 +325,6 @@ public class SearchActivity<i> extends AppCompatActivity {
         p.agree = (r.getAgreement()==1);
         p.display = (r.getDisplay()==1);
         p.score = r.getRiskScore();
-
-        Log.d("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", p.name);
         return p;
     }
 }

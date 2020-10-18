@@ -72,6 +72,7 @@ public class SearchActivity2 extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
                 intent.putExtra("product", product);
+                intent.putExtra("productNum", getIntent().getExtras().get("productNum").toString());
                 startActivity(intent);
                 finish();
             }
