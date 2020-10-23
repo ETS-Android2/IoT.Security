@@ -28,9 +28,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Vector;
+import java.util.zip.DataFormatException;
 
 public class SearchActivity<i> extends AppCompatActivity {
     RecyclerView recyclerView = null;
@@ -54,6 +59,7 @@ public class SearchActivity<i> extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemViewCacheSize(0);
         adapter = new ProductAdapter();
+        adapter.clearItems();
 
         adapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
             @Override
@@ -64,7 +70,30 @@ public class SearchActivity<i> extends AppCompatActivity {
                  * 어떤식으로 선택할지
                  * 월요일에 논의 후 적용
                  */
-//                mDatabase.setValue(adapter.getItem(position));
+                Product dataForDB = (Product)getIntent().getExtras().get("product");;
+                Product beforeDB = (Product)adapter.getItem(position);
+
+                dataForDB.always = beforeDB.always;
+                dataForDB.score = beforeDB.score;
+                dataForDB.infoType = beforeDB.infoType;
+                dataForDB.deviceType = beforeDB.deviceType;
+                dataForDB.serviceType = beforeDB.serviceType;
+                dataForDB.resourceType = "oic.r.light.brightness, oic.r.light.dimming, oic.r.light.raptime, oic.r.switch.binary";
+
+                // 제품에 대해 등록했을 때의 시간을 String으로 저장
+                long now = System.currentTimeMillis();
+                Date date = new Date(now);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
+                dataForDB.cycle = dateFormat.format(date);
+
+                dataForDB.period = 1;
+
+                mDatabase.setValue(dataForDB);
+
+                adapter.clearItems();
+                // Back to Product List(Product Fragment)
+                finish();
+
             }
         });
         // 현재 저장되어 있는 제품의 data
@@ -83,12 +112,26 @@ public class SearchActivity<i> extends AppCompatActivity {
             Collections.sort(sortedDeviceMain);
 
             ArrayList<Product> similarProducts = top5Print(sortedDeviceMain, resourceMain);
-            tv.setText(similarProducts.get(0).name);
+            /**
+             * GET Time Test
+             * DB에는 연결된 시각을 저장
+             * 불러오거나 넣을때 마다 period +1
+             * cycle은 연결해제(삭제) 할때까지 유지
+             * detail fragment 에서 데이터 출력할 때에는 연결 기간으로 (현재시각 - 연결시각)
+             */
+            long now = System.currentTimeMillis();
+            Date date = new Date(now);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
+            Date testDate = dateFormat.parse("202011010000");
+            long diff = (date.getTime() - testDate.getTime())/1000;
+            date = new Date(diff);
+
+            tv.setText(dateFormat.format(date));
 
             adapter.setItems(similarProducts);
             adapter.notifyDataSetChanged();
             recyclerView.setAdapter(adapter);
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
 
@@ -293,7 +336,6 @@ public class SearchActivity<i> extends AppCompatActivity {
         ArrayList<Product> top5 = new ArrayList<Product>();
         for(int i=0; i<5; i++){
             Product temp = getIdxDPD(sortedList.get(i).getIdx(), resources);
-            Log.d("?????????????????????????", ""+sortedList.get(i).getIdx());
             top5.add(temp);
             adapter.addItem(temp);
         }

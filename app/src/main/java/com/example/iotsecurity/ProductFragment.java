@@ -102,6 +102,7 @@ public class ProductFragment extends Fragment {
         recyclerView.setItemViewCacheSize(0);
 
         adapter = new ProductAdapter();
+        adapter.clearItems();
 
         adapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
             @Override
@@ -119,15 +120,18 @@ public class ProductFragment extends Fragment {
         /**
          * Value Event Listener
          */
-        final ArrayList<Product> products = new ArrayList<>();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Product temp;
+                ArrayList<Product> products = new ArrayList<>();
+                /**
+                 * 전체 제품 리스트 출력
+                 * 1번 제품이 없는 경우 예외 발
+                 */
                 for(int i=1; i<=snapshot.getChildrenCount(); i++) {
                     temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
-                    Log.d("tmp.name : ", String.valueOf(temp.score));
                     products.add(temp);
                     adapter.addItem(temp);
                 }

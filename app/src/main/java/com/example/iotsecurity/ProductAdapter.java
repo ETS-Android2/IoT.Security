@@ -74,8 +74,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.myViewHo
          * @param item
          */
         public void setItem(Product item) {
-            // 임시 score.
-            score.setText(String.valueOf(item.score));
+
+
+                score.setText(String.valueOf(item.score));
             name.setText(item.name);
             provider.setText(item.provider);
             category.setText(item.category);
