@@ -34,7 +34,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -161,12 +163,13 @@ public class AddByWifiActivity extends AppCompatActivity {
 
     private void processResponse(JSONObject response) throws JSONException {
         JSONObject lightList = response.getJSONObject("lights");
-        JSONObject lightJson;
+        JSONObject lightJson, state;
         Product light = new Product();
         boolean isNothing = true;       // 감지되는 제품이 있는지?
         for (int i = 1; i<lightList.length(); i++) {
             lightJson = lightList.getJSONObject(String.valueOf(i));
-            if(lightJson.getJSONObject("state").getBoolean("reachable")) {
+            state = lightJson.getJSONObject("state");
+            if(state.getBoolean("reachable")) {
                 isNothing = false;
 
                 String name = lightJson.getString("name");
@@ -174,6 +177,11 @@ public class AddByWifiActivity extends AppCompatActivity {
                 String modelId = lightJson.getString("modelid");
                 String piId = lightJson.getString("productid");
                 String productName = lightJson.getString("productname");
+                JSONObject usingData = new JSONObject();
+                usingData.put("on", state.getString("on"));
+                usingData.put("bri", state.getString("bri"));
+                usingData.put("hue", state.getString("hue"));
+                usingData.put("sat", state.getString("sat"));
 
                 light = new Product();
                 light.name = name;
@@ -181,6 +189,7 @@ public class AddByWifiActivity extends AppCompatActivity {
                 light.modelId = modelId;
                 light.piId = piId;
                 light.productName = productName;
+                light.data = usingData.toString();
 
                 light.category = "전구";
                 light.connection = "wifi";
@@ -192,11 +201,21 @@ public class AddByWifiActivity extends AppCompatActivity {
 //                        "oic.r.light.raptime, oic.r.switch.binary";
                 light.resourceType = "";
                 light.serviceType = "";
-                light.cycle = "20200901 - 20201010";
-                light.period = 0;
                 light.always = 0;
                 light.infoType = "";
                 light.score = -1;
+
+                /**
+                 * DB에는 연결된 시각을 저장
+                 * 불러오거나 넣을때 마다 period +1
+                 * cycle은 연결해제(삭제) 할때까지 유지
+                 * detail fragment 에서 데이터 출력할 때에는 연결 기간으로 (현재시각 - 연결시각)
+                 */
+                long now = System.currentTimeMillis();
+                Date date = new Date(now);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
+                light.cycle = dateFormat.format(date);
+                light.period = 1;
 
                 Intent intent = new Intent(this, SearchActivity2.class);
                 intent.putExtra("product", light);

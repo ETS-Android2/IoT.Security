@@ -122,11 +122,11 @@ public class SearchActivity<i> extends AppCompatActivity {
             long now = System.currentTimeMillis();
             Date date = new Date(now);
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
-            Date testDate = dateFormat.parse("202011010000");
+            Date testDate = dateFormat.parse("2020/11/01/00:00");
             long diff = (date.getTime() - testDate.getTime())/1000;
             date = new Date(diff);
 
-            tv.setText(dateFormat.format(date));
+//            tv.setText(dateFormat.format(date));
 
             adapter.setItems(similarProducts);
             adapter.notifyDataSetChanged();

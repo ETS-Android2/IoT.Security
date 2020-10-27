@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -42,14 +43,17 @@ import java.util.ArrayList;
  * db 저장과 http request를 분리할 필요가 있음
  */
 public class ProductFragment extends Fragment {
-    public DatabaseReference mDatabase;
+    DatabaseReference mDatabase;
+    SeekBar seekBar;
 
     ProductAdapter adapter;
     RecyclerView recyclerView;
 
     FloatingActionButton addProductByWifi, openFab, addProductByBluetooth;
+    private boolean isFabOpen = false;
 
     static RequestQueue requestQueue;
+    View.OnClickListener onClickListener;
 
     // hue api hub 아이피 주소
     String baseUrl;
@@ -58,40 +62,93 @@ public class ProductFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.product_fragment, container, false);
 
+        seekBar = rootView.findViewById(R.id.seekBar);
+        addProductByBluetooth = rootView.findViewById(R.id.add_by_bluetooth);
+        addProductByWifi = rootView.findViewById(R.id.add_by_wifi);
+        openFab = rootView.findViewById(R.id.add_product);
 
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                final int targetScore = seekBar.getProgress();
+                mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+                mDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Product temp;
+                        ArrayList<Product> products = new ArrayList<>();
+                        /**
+                         * 전체 제품 리스트 출력
+                         * 1번 제품이 없는 경우 예외 발생
+                         */
+                        for(int i=1; i<=snapshot.getChildrenCount(); i++) {
+                            temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
+                            if(temp.score <= targetScore) {
+                                products.add(temp);
+                                adapter.addItem(temp);
+                            }
+                        }
+                        adapter.setItems(products);
+                        adapter.notifyDataSetChanged();
+                        recyclerView.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         /**
          * 장치 추가 버튼 구현
          */
-        addProductByBluetooth = rootView.findViewById(R.id.add_by_bluetooth);
-        addProductByBluetooth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        addProductByWifi = rootView.findViewById(R.id.add_by_wifi);
-        addProductByWifi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddByWifiActivity.class);
-                intent.putExtra("baseUrl", addUrl);
-                startActivity(intent);
-            }
-        });
-
-        openFab = rootView.findViewById(R.id.add_product);
-        openFab.setOnClickListener(new View.OnClickListener() {
+        onClickListener = new View.OnClickListener() {
             @SuppressLint("RestrictedApi")
             @Override
             public void onClick(View v) {
-                addProductByWifi.setVisibility(View.VISIBLE);
-                addProductByWifi.setClickable(true);
-                addProductByBluetooth.setVisibility(View.VISIBLE);
-                addProductByBluetooth.setClickable(true);
+                switch (v.getId()) {
+                    case R.id.add_product:
+                        if(!isFabOpen) {
+                            addProductByWifi.setVisibility(View.VISIBLE);
+                            addProductByWifi.setClickable(true);
+                            addProductByBluetooth.setVisibility(View.VISIBLE);
+                            addProductByBluetooth.setClickable(true);
+                            isFabOpen = true;
+                        } else {
+                            addProductByWifi.setVisibility(View.INVISIBLE);
+                            addProductByWifi.setClickable(false);
+                            addProductByBluetooth.setVisibility(View.INVISIBLE);
+                            addProductByBluetooth.setClickable(false);
+                            isFabOpen = false;
+                        }
+                        break;
+
+                    case R.id.add_by_wifi:
+                        Intent intent = new Intent(getActivity(), AddByWifiActivity.class);
+                        intent.putExtra("baseUrl", addUrl);
+                        startActivity(intent);
+                        break;
+                    case R.id.add_by_bluetooth:
+
+                        break;
+                }
             }
-        });
+        };
+        addProductByBluetooth.setOnClickListener(onClickListener);
+        addProductByWifi.setOnClickListener(onClickListener);
+        openFab.setOnClickListener(onClickListener);
 
         /**
          * 리사이클러 뷰 생성
@@ -117,34 +174,7 @@ public class ProductFragment extends Fragment {
             }
         });
 
-        /**
-         * Value Event Listener
-         */
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Product temp;
-                ArrayList<Product> products = new ArrayList<>();
-                /**
-                 * 전체 제품 리스트 출력
-                 * 1번 제품이 없는 경우 예외 발
-                 */
-                for(int i=1; i<=snapshot.getChildrenCount(); i++) {
-                    temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
-                    products.add(temp);
-                    adapter.addItem(temp);
-                }
-                adapter.setItems(products);
-                adapter.notifyDataSetChanged();
-                recyclerView.setAdapter(adapter);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
         return rootView;
     }

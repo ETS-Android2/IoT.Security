@@ -581,7 +581,7 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="30dp"
-        android:background="#002952"
-        android:src="@drawable/white_search_icon">
+        android:background="@color/colorBase"
+        android:src="@drawable/fab_search">
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
 </androidx.constraintlayout.widget.ConstraintLayout>

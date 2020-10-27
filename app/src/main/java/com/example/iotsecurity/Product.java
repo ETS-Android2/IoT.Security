@@ -29,7 +29,7 @@ public class Product implements Serializable {
     public String modelId;      // 모델 번호
     public String resourceType;
     public String serviceType;  // 서비스 타입
-    public Map<String, String> data; // 데이터
+    public String data; // 데이터
     public String cycle;      // 수집 주기
     public long period;         // 연결 횟수 (count)
     public boolean portable;    // 장치 이동성
