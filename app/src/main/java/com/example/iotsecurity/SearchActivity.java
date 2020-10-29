@@ -74,19 +74,28 @@ public class SearchActivity<i> extends AppCompatActivity {
                 Product beforeDB = (Product)adapter.getItem(position);
 
                 dataForDB.always = beforeDB.always;
-                dataForDB.score = beforeDB.score;
+
                 dataForDB.infoType = beforeDB.infoType;
                 dataForDB.deviceType = beforeDB.deviceType;
                 dataForDB.serviceType = beforeDB.serviceType;
                 dataForDB.resourceType = "oic.r.light.brightness, oic.r.light.dimming, oic.r.light.raptime, oic.r.switch.binary";
 
-                // 제품에 대해 등록했을 때의 시간을 String으로 저장
+                /**
+                 * GET Time Test
+                 * DB에는 연결된 시각을 저장
+                 * 불러오거나 넣을때 마다 period +1
+                 * cycle은 연결해제(삭제) 할때까지 유지
+                 * detail fragment 에서 데이터 출력할 때에는 연결 기간으로 (현재시각 - 연결시각)
+                 * 제품에 대해 등록했을 때의 시간을 String으로 저장
+                 */
                 long now = System.currentTimeMillis();
                 Date date = new Date(now);
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
                 dataForDB.cycle = dateFormat.format(date);
 
                 dataForDB.period = 1;
+
+                dataForDB.score = getRiskScore(dataForDB);
 
                 mDatabase.setValue(dataForDB);
 
@@ -144,7 +153,6 @@ public class SearchActivity<i> extends AppCompatActivity {
      * 병합 후에는 DB에 저장
      * 이 저장된 Product 데이터는 ProductFragment에서 출력.
      */
-
 
     private Vector<Double> getProductVector(Product product) {
         Vector<Double> productVec = new Vector<Double>(13);
@@ -336,6 +344,7 @@ public class SearchActivity<i> extends AppCompatActivity {
         ArrayList<Product> top5 = new ArrayList<Product>();
         for(int i=0; i<5; i++){
             Product temp = getIdxDPD(sortedList.get(i).getIdx(), resources);
+            temp.score = Math.round((sortedList.get(i).getSimScore() * 100) * 100)/ 100.0;
             top5.add(temp);
             adapter.addItem(temp);
         }
@@ -364,9 +373,133 @@ public class SearchActivity<i> extends AppCompatActivity {
             p.always = 1;
         p.serviceType = r.getServices();
         p.infoType = r.getDataType();
+        p.deviceType = r.getDeviceType();
         p.agree = (r.getAgreement()==1);
         p.display = (r.getDisplay()==1);
         p.score = r.getRiskScore();
         return p;
+    }
+
+    /**
+     * 위험도 점수 계산
+     *
+     * @param product 계산할 제품 객체
+     * @return 위험도 점수
+     */
+    private double getRiskScore(Product product) {
+
+        double count = getCountScore(product.period, 15);
+        double measure = getMeasureScore(product.always, 5);
+        double move = getMoveScore(product.portable, 25);
+        double connection = getConnectionScore(product.connection, 10);
+        double service = getServiceScore(product.serviceType, 10);
+        double dataType = getDataTypeScore(product.infoType, 15);
+        double consent = getConsentScore(product.deviceType, product.display, 20);
+
+        double result = count + measure + move + connection + service + dataType + consent;
+
+        return Math.round(result * 100) / 100.0;
+    }
+
+    private double getServiceScore(String serviceType, double weight) {
+        double service = 1;
+        String[] biometricData = {"근육량", "bmi", "체중", "체지방", "내장지방", "기초대사", "바디점수", "수분",
+                                "지방무게", "신체나이", "수분량", "기초대사량", "스트레스지수", "골피부", "골격량",
+                                "지방외체중", "체형", "신체점수", "비만등급", "심박수", "혈압", "지문"};
+        String[] mediaData = {"CCTV영상", "움직임감지", "이미지", "음성"};
+        String[] gpsData = {"걸음수", "위치정보", "문열림감지", "출입감지"};
+        String[] usingPatternData = {"전력량"};
+
+        for(int i=0; i<usingPatternData.length; i++)
+            if(serviceType.contains(usingPatternData[i])) {
+                service = 2;
+                break;
+            }
+        for(int i=0; i<gpsData.length; i++)
+            if(serviceType.contains(gpsData[i])) {
+                service = 3;
+                break;
+            }
+        for(int i=0; i<mediaData.length; i++)
+            if(serviceType.contains(mediaData[i])) {
+                service = 4;
+                break;
+            }
+        for(int i=0; i<biometricData.length; i++)
+            if(serviceType.contains(biometricData[i])) {
+                service = 5;
+                break;
+            }
+        service = service / 5 * weight;
+
+        return service;
+    }
+
+    private double getCountScore(long period, double weight) {
+        return (double)period / 1000 * weight;
+    }
+
+    private double getMeasureScore(int always, double weight) {
+        double measure = always;
+        if(measure == 3)
+            measure = 1;
+        else if(measure == 2)
+            measure = 0.5;
+        else
+            measure = 0;
+        measure *= weight;
+
+        return measure;
+    }
+
+    private double getMoveScore(boolean portable, double weight) {
+        double move = 0.5;
+        if(portable)
+            move = 1;
+        move *= weight;
+
+        return move;
+    }
+
+    private double getConsentScore(String deviceType, boolean display, double weight) {
+        double deviceTypeScore = 0;
+        if(deviceType.contains("액츄에이터"))
+            deviceTypeScore = 2;
+        if(deviceType.contains("스마트장비"))
+            deviceTypeScore = 3;
+        double displayScore = 1;
+        if(display)
+            displayScore = 2;
+
+        double consent = (deviceTypeScore + displayScore) / 5 * weight;
+
+        return consent;
+    }
+
+    private double getConnectionScore(String connection, double weight) {
+        double score = 0;
+        if(connection.contains("z-wave"))
+            score = 1;
+        if(connection.contains("zigbee"))
+            score = 2;
+        if(connection.contains("bluetooth"))
+            score = 3;
+        if(connection.contains("wifi"))
+            score = 4;
+        score = score / 4 * weight;
+
+        return score;
+    }
+
+    private double getDataTypeScore(String infoType, double weight) {
+        double dataType = 0;
+        if(infoType.contains("행태정보"))
+            dataType = 1;
+        if(infoType.contains("사용패턴"))
+            dataType = 2;
+        if(infoType.contains("생체정보") || infoType.contains("금융정보"))
+            dataType = 3;
+        dataType = dataType / 3 * weight;
+        return dataType;
     }
 }

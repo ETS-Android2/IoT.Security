@@ -133,6 +133,55 @@ public class DetailFragment extends Fragment {
                     always.setText("상시 수집");
 
 
+                // 출력 버튼 동작
+                out.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // 출력용 JSON
+                        try {
+                            jsonForOut = new JSONObject();
+                            if(checkName.isChecked()) {
+                                jsonForOut.put("name", temp.name);
+                            }
+                            if(checkProvider.isChecked())
+                                jsonForOut.put("provider", temp.provider);
+                            if(checkCategory.isChecked())
+                                jsonForOut.put("category", temp.category);
+                            if(checkModelId.isChecked())
+                                jsonForOut.put("modelId", temp.modelId);
+                            if(checkPiId.isChecked())
+                                jsonForOut.put("piId", temp.piId);
+                            if(checkProductName.isChecked())
+                                jsonForOut.put("productName", temp.productName);
+                            if(checkConnection.isChecked())
+                                jsonForOut.put("connection", temp.connection);
+                            if(checkDisplay.isChecked())
+                                jsonForOut.put("display", String.valueOf(temp.display));
+                            if(checkPortable.isChecked())
+                                jsonForOut.put("portable", String.valueOf(temp.portable));
+                            if(checkAgree.isChecked())
+                                jsonForOut.put("agree", String.valueOf(temp.agree));
+                            if(checkDeviceType.isChecked())
+                                jsonForOut.put("deviceType", temp.deviceType);
+                            if(checkServiceType.isChecked())
+                                jsonForOut.put("serviceType", temp.serviceType);
+                            if(checkCycle.isChecked())
+                                jsonForOut.put("cycle", temp.cycle);
+                            if(checkPeriod.isChecked())
+                                jsonForOut.put("period", String.valueOf(temp.period));
+                            if(checkInfoType.isChecked())
+                                jsonForOut.put("infoType", temp.infoType);
+                            if(checkData.isChecked())
+                                jsonForOut.put("data", temp.data);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Intent intent = new Intent(getActivity(), OutputActivity.class);
+                        intent.putExtra("output", jsonForOut.toString());
+                        startActivity(intent);
+                    }
+                });
+
             }
 
             @Override
@@ -141,57 +190,7 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        // 출력용 JSON
-        try {
-            jsonForOut = new JSONObject();
-            if(checkName.isActivated()) {
-                jsonForOut.put("name", temp.name);
-                Log.d("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! JSON CHECK", jsonForOut.toString());
-            }
-            if(checkProvider.isChecked())
-                jsonForOut.put("provider", temp.provider);
-            if(checkCategory.isChecked())
-                jsonForOut.put("category", temp.category);
-            if(checkModelId.isChecked())
-                jsonForOut.put("modelId", temp.modelId);
-            if(checkPiId.isChecked())
-                jsonForOut.put("piId", temp.piId);
-            if(checkProductName.isChecked())
-                jsonForOut.put("productName", temp.productName);
-            if(checkConnection.isChecked())
-                jsonForOut.put("connection", temp.connection);
-            if(checkDisplay.isChecked())
-                jsonForOut.put("display", String.valueOf(temp.display));
-            if(checkPortable.isChecked())
-                jsonForOut.put("portable", String.valueOf(temp.portable));
-            if(checkAgree.isChecked())
-                jsonForOut.put("agree", String.valueOf(temp.agree));
-            if(checkDeviceType.isChecked())
-                jsonForOut.put("deviceType", temp.deviceType);
-            if(checkServiceType.isChecked())
-                jsonForOut.put("serviceType", temp.serviceType);
-            if(checkCycle.isChecked())
-                jsonForOut.put("cycle", temp.cycle);
-            if(checkPeriod.isChecked())
-                jsonForOut.put("period", String.valueOf(temp.period));
-            if(checkInfoType.isChecked())
-                jsonForOut.put("infoType", temp.infoType);
-            if(checkData.isChecked())
-                jsonForOut.put("data", temp.data);
 
-//                    Log.d("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! JSON CHECK", jsonForOut.toString());
-            // 출력 버튼 동작
-            out.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), OutputActivity.class);
-                    intent.putExtra("output", jsonForOut.toString());
-                    startActivity(intent);
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
         baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
         baseUrl = baseUrl + lightNum + "/";
