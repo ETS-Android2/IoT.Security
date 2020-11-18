@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_base"
+    tools:context=".InputForScaleActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <ImageView
+            android:id="@+id/title_Home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.089"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.047"
+            android:paddingTop="20dp"
+            android:paddingLeft="20dp"
+            android:paddingBottom="50dp"
+            app:srcCompat="@drawable/title_smart_home_iot" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_for_item3"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="10sp"
+                android:paddingLeft="16sp"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/main_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="16sp"
+                    android:textSize="40sp"
+                    android:text="Input Data For Scale"
+                    android:textColor="@color/colorBase"></TextView>
+                <TextView
+                    android:id="@+id/gender_title"
+                    android:paddingBottom="15sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gender"
+                    android:textSize="25sp"
+                    ></TextView>
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="25sp"
+                    android:id="@+id/gender_group"
+                    android:orientation="horizontal">
+                    <RadioButton
+                        android:id="@+id/male"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20sp"
+                        android:paddingRight="50sp"
+                        android:text="Male"></RadioButton>
+                    <RadioButton
+                        android:id="@+id/female"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20sp"
+                        android:text="Female"></RadioButton>
+                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="15sp"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="60sp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/age_title"
+                            android:paddingBottom="15sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Age"
+                            android:textSize="25sp"
+                            ></TextView>
+
+
+                        <EditText
+                            android:id="@+id/age_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="15sp"
+                            android:ems="5"
+                            android:maxLength="3"
+                            android:inputType="number"
+                            android:hint="24"></EditText>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/height_title"
+                            android:paddingBottom="15sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Height"
+                            android:textSize="25sp"
+                            ></TextView>
+
+
+                        <EditText
+                            android:id="@+id/height_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="15sp"
+                            android:ems="5"
+                            android:maxLength="3"
+                            android:inputType="number"
+                            android:hint="cm"></EditText>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/weight_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="15sp"
+                    android:text="Weight"
+                    android:textSize="25sp"></TextView>
+                <TextView
+                    android:id="@+id/weight_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="80sp"
+                    android:text="50.0kg"
+                    android:textAlignment="center"
+                    android:textSize="60sp"></TextView>
+
+                <Button
+                    android:id="@+id/button_sync"
+                    android:layout_gravity="center"
+                    android:layout_width="350sp"
+                    android:layout_height="wrap_content"
+                    android:text="Sync With Scale"></Button>
+                <Button
+                    android:id="@+id/button_complete"
+                    android:layout_gravity="center"
+                    android:layout_width="350sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20sp"
+                    android:text="Input Complete"></Button>
+
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

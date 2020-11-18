@@ -192,7 +192,7 @@ public class DetailFragment extends Fragment {
 
 
         requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
-        baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
+        baseUrl = String.format("http://192.168.0.9/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
         baseUrl = baseUrl + lightNum + "/";
         makeRequest(baseUrl);
 

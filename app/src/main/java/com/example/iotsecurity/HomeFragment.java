@@ -105,19 +105,21 @@ public class HomeFragment extends Fragment {
 
                 // 각 제품이 몇개인지? DATA to hashMap
                 for(int i=0; i<products.size(); i++) {
-                    String currentCategory = products.get(i).category;
-                    String currentProvider = products.get(i).provider;
-                    if(!contentCount.containsKey(currentCategory))
-                        contentCount.put(currentCategory, 1);
-                    else
-                        contentCount.put(currentCategory, contentCount.get(currentCategory)+1);
+                    if(products.get(i) != null) {
+                        String currentCategory = products.get(i).category;
+                        String currentProvider = products.get(i).provider;
+                        if (!contentCount.containsKey(currentCategory))
+                            contentCount.put(currentCategory, 1);
+                        else
+                            contentCount.put(currentCategory, contentCount.get(currentCategory) + 1);
 
-                    if(!providerCount.containsKey(currentProvider))
-                        providerCount.put(currentProvider, 1);
-                    else
-                        providerCount.put(currentProvider, providerCount.get(currentProvider)+1);
+                        if (!providerCount.containsKey(currentProvider))
+                            providerCount.put(currentProvider, 1);
+                        else
+                            providerCount.put(currentProvider, providerCount.get(currentProvider) + 1);
 
-                    avgRisk += products.get(i).score;
+                        avgRisk += products.get(i).score;
+                    }
                 }
 
                 Description descrpt = new Description();
@@ -184,21 +186,21 @@ public class HomeFragment extends Fragment {
                             return labelsDevice.get((int)value);
                     }
                 });
-                // provider list x축 설정
-                xAxis = providerList.getXAxis();
-                xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-                xAxis.setGranularity(1f);
-                xAxis.setDrawGridLines(false);
-                xAxis.setCenterAxisLabels(false);
-                xAxis.setValueFormatter(new IndexAxisValueFormatter() {
-                    @Override
-                    public String getFormattedValue(float value) {
-                        if((int)value<0 || (int)value > labelsProvider.size())
-                            return " ";
-                        else
-                            return labelsProvider.get((int)value);
-                    }
-                });
+//                // provider list x축 설정
+//                xAxis = providerList.getXAxis();
+//                xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+//                xAxis.setGranularity(1f);
+//                xAxis.setDrawGridLines(false);
+//                xAxis.setCenterAxisLabels(false);
+//                xAxis.setValueFormatter(new IndexAxisValueFormatter() {
+//                    @Override
+//                    public String getFormattedValue(float value) {
+//                        if((int)value<0 || (int)value > labelsProvider.size())
+//                            return " ";
+//                        else
+//                            return labelsProvider.get((int)value);
+//                    }
+//                });
                 deviceList.getAxisLeft().setDrawLabels(false);
                 deviceList.getAxisRight().setDrawLabels(true);
                 deviceList.getXAxis().setDrawGridLines(false);

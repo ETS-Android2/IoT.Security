@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
 
         requestQueue = Volley.newRequestQueue(this.getApplicationContext());
-        String baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
+        String baseUrl = String.format("http://192.168.0.9/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
         makeRequest(baseUrl);
 
         pager = findViewById(R.id.pager);

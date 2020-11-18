@@ -57,7 +57,7 @@ public class ProductFragment extends Fragment {
 
     // hue api hub 아이피 주소
     String baseUrl;
-    String addUrl = String.format("http://192.168.0.7/api/");
+    String addUrl = String.format("http://192.168.0.9/api/");
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.product_fragment, container, false);
@@ -83,9 +83,11 @@ public class ProductFragment extends Fragment {
                          */
                         for(int i=1; i<=snapshot.getChildrenCount(); i++) {
                             temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
-                            if(temp.score <= targetScore) {
-                                products.add(temp);
-                                adapter.addItem(temp);
+                            if(temp != null) {
+                                if (temp.score <= targetScore) {
+                                    products.add(temp);
+                                    adapter.addItem(temp);
+                                }
                             }
                         }
                         adapter.setItems(products);
@@ -141,7 +143,8 @@ public class ProductFragment extends Fragment {
                         startActivity(intent);
                         break;
                     case R.id.add_by_bluetooth:
-
+                        Intent intentForBT = new Intent(getActivity(), AddByBluetoothActivity.class);
+                        startActivity(intentForBT);
                         break;
                 }
             }

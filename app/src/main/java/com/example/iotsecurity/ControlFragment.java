@@ -1,11 +1,14 @@
 package com.example.iotsecurity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +24,8 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,103 +46,261 @@ public class ControlFragment extends Fragment {
     static RequestQueue requestQueue;
     Product product;
     String baseUrl;
+    Button inputData, calculate;
     boolean on = true;
     int bri, hue, sat;
+
+    TextView heightTV, ageTV, weightTV, genderTV;
+    TextView bmiTV, bmrTV, idealWeightTV;
+
+    public ControlFragment() {
+    }
 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.control_fragment, container, false);
         product = (Product)this.getArguments().getSerializable("product");
+        ViewGroup rootView = null;
 
-        // 전구 번호 추출
-        String lightNum = product.name.replaceAll("[^0-9]", "");
+        // 전구일 때 동작할 화면
+        if(product.category.equals("전구")) {
 
-        requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
-        baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
-        baseUrl = baseUrl + lightNum + "/";
-        makeRequest(baseUrl);
-
-        // Chart 세팅
-        pieChart = (PieChart)rootView.findViewById(R.id.risk_score);
-        ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
-        yValues.add(new PieEntry((float)product.score));
-        yValues.add(new PieEntry(100-(float)product.score));
-
-        PieDataSet dataSet = new PieDataSet(yValues, "");
-        dataSet.setDrawValues(false);
-        dataSet.setColors(Color.RED, Color.WHITE);
-        PieData data = new PieData(dataSet);
-        pieChart.setData(data);
+            rootView = (ViewGroup) inflater.inflate(R.layout.control_fragment_lights, container, false);
 
 
-        // bri 조절
-        intensitySeekBar = (SeekBar)rootView.findViewById(R.id.intensity_seekbar);
-        intensitySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            // 전구 번호 추출
+            String lightNum = product.name.replaceAll("[^0-9]", "");
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                bri = seekBar.getProgress();
-                if(bri == 0)
-                    on = false;
-                else {
-                    on = true;
+            requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
+            baseUrl = String.format("http://192.168.0.9/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
+            baseUrl = baseUrl + lightNum + "/";
+            makeRequest(baseUrl);
+
+            // Chart 세팅
+            pieChart = (PieChart) rootView.findViewById(R.id.risk_score);
+            ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
+            yValues.add(new PieEntry((float) product.score));
+            yValues.add(new PieEntry(100 - (float) product.score));
+
+            PieDataSet dataSet = new PieDataSet(yValues, "");
+            dataSet.setDrawValues(false);
+            dataSet.setColors(Color.RED, Color.WHITE);
+            PieData data = new PieData(dataSet);
+            pieChart.setData(data);
+
+
+            // bri 조절
+            intensitySeekBar = (SeekBar) rootView.findViewById(R.id.intensity_seekbar);
+            intensitySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    bri = seekBar.getProgress();
+                    if (bri == 0)
+                        on = false;
+                    else {
+                        on = true;
+                    }
+                    makePutRequest(baseUrl);
                 }
-                makePutRequest(baseUrl);
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    bri = seekBar.getProgress();
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    bri = seekBar.getProgress();
+                }
+            });
+            // sat 조절
+            saturationSeekBar = (SeekBar) rootView.findViewById(R.id.saturation_seekbar);
+            saturationSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    sat = seekBar.getProgress();
+                    makePutRequest(baseUrl);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    sat = seekBar.getProgress();
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    sat = seekBar.getProgress();
+                }
+            });
+            // hue 조절
+            hueSeekBar = (SeekBar) rootView.findViewById(R.id.hue_seekbar);
+            hueSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    hue = seekBar.getProgress();
+                    makePutRequest(baseUrl);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    makePutRequest(baseUrl);
+                }
+            });
+
+        }
+
+        // 체중계일 때 동작할 화면
+        else if(product.category.equals("체중계")) {
+            rootView = (ViewGroup) inflater.inflate(R.layout.control_fragment_scale, container, false);
+            final double height, age, weight;
+            final String gender;
+            JSONObject productData = null;
+            try {
+                productData = new JSONObject(product.data);
+
+
+                heightTV = rootView.findViewById(R.id.height);
+                ageTV = rootView.findViewById(R.id.age);
+                weightTV = rootView.findViewById(R.id.weight);
+                genderTV = rootView.findViewById(R.id.gender);
+                bmiTV = rootView.findViewById(R.id.bmi);
+                bmrTV = rootView.findViewById(R.id.bmr);
+                idealWeightTV = rootView.findViewById(R.id.ideal_weight);
+
+
+
+                heightTV.setText(productData.get("height").toString());
+                ageTV.setText(productData.get("age").toString());
+                weightTV.setText(productData.get("weight").toString());
+                genderTV.setText(productData.get("gender").toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                bri = seekBar.getProgress();
-            }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                bri = seekBar.getProgress();
-            }
-        });
-        // sat 조절
-        saturationSeekBar = (SeekBar)rootView.findViewById(R.id.saturation_seekbar);
-        saturationSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            height = Double.parseDouble((String)heightTV.getText());
+            age = Double.parseDouble((String)ageTV.getText());
+            weight = Double.parseDouble((String)weightTV.getText());
+            gender = (String)genderTV.getText();
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                sat = seekBar.getProgress();
-                makePutRequest(baseUrl);
-            }
+            inputData = (Button)rootView.findViewById(R.id.input_data);
+            calculate = (Button)rootView.findViewById(R.id.calculate);
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                sat = seekBar.getProgress();
-            }
+            inputData.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), InputForScaleActivity.class);
+                    intent.putExtra("height", height);
+                    intent.putExtra("age", age);
+                    intent.putExtra("weight", weight);
+                    intent.putExtra("gender", gender);
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                sat = seekBar.getProgress();
-            }
-        });
-        // hue 조절
-        hueSeekBar = (SeekBar)rootView.findViewById(R.id.hue_seekbar);
-        hueSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    startActivityForResult(intent, 0);
+                }
+            });
+            calculate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    double temp = 0.0;
+                    temp = getBMI(height, age, weight, gender);
+                    bmiTV.setText("" + temp);
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                hue = seekBar.getProgress();
-                makePutRequest(baseUrl);
-            }
+                    temp = getBMR(height, age, weight, gender);
+                    bmrTV.setText("" + temp);
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
+                    temp = getIdealWeight(height, age, weight, gender);
+                    idealWeightTV.setText("" + temp);
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                makePutRequest(baseUrl);
-            }
-        });
+                }
+            });
 
+            // Chart 세팅
+            pieChart = (PieChart) rootView.findViewById(R.id.risk_score);
+            ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
+            yValues.add(new PieEntry((float) product.score));
+            yValues.add(new PieEntry(100 - (float) product.score));
+
+            PieDataSet dataSet = new PieDataSet(yValues, "");
+            dataSet.setDrawValues(false);
+            dataSet.setColors(Color.RED, Color.WHITE);
+            PieData data = new PieData(dataSet);
+            pieChart.setData(data);
+        }
         return rootView;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Bundle bundle = data.getExtras();
+
+        heightTV.setText("" + bundle.get("height"));
+        ageTV.setText("" + bundle.get("age"));
+        weightTV.setText("" + bundle.get("weight"));
+        genderTV.setText(bundle.get("gender").toString());
+
+    }
+
+    private double getIdealWeight(double height, double age, double weight, String gender) {
+        double result = 0.0;
+
+        if(gender.equals("male"))
+            result = (height - 80) * 0.7;
+        else if(gender.equals("female"))
+            result = (height - 70) * 0.6;
+        else
+            result = 2; // ideal weight 구하는 식은 여러 종류이며 종류별로 결과가 다름.
+
+        return result;
+    }
+
+    private double getBMR(double height, double age, double weight, String gender) {
+        double result = 0.0;
+        if(gender.equals("female")) {
+            result = 864.6 + weight * 10.2036;
+            result -= height * 0.39336;
+            result -= age * 6.204;
+        }
+        else if(gender.equals("male")) {
+            result = 877.8 + weight * 14.916;
+            result -= height * 0.726;
+            result -= age * 8.976;
+        }
+        else
+            result = -1;
+
+        // Capping
+        if(gender.equals("female") && result > 2996)
+            result = 5000;
+        else if(gender.equals("male") && result > 2322)
+            result = 5000;
+
+        // set maximum or minimum
+        if(result > 10000 || result <500)
+            result = -1;
+
+        return result;
+    }
+
+
+    private double getBMI(double height, double age, double weight, String gender) {
+        double result = weight / ((height/100) * (height/100));
+
+        // set maximum or minimum
+        if(result > 90 || result < 10)
+            result = -1;
+
+        return result;
+    }
+
 
     private void makeRequest(String baseUrl) {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener<JSONObject>() {

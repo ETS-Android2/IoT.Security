@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ControlFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:rowCount="1"
+                android:columnCount="2">
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_width="155dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/left_layout"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textSize="25dp"
+                        android:text="Gender"
+                        android:textColor="@color/colorBase" />
+                    <TextView
+                        android:id="@+id/gender"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:text="Male"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textSize="25dp"
+                        android:text="Height"
+                        android:textColor="@color/colorBase" />
+                    <TextView
+                        android:id="@+id/height"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:text="0.00"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textSize="25sp"
+                        android:text="Age"
+                        android:textColor="@color/colorBase" />
+                    <TextView
+                        android:id="@+id/age"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:text="0.00"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textSize="25dp"
+                        android:text="Weight"
+                        android:textColor="@color/colorBase" />
+                    <TextView
+                        android:id="@+id/weight"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:text="0.00"
+                        android:textColor="#000000" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_width="155dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/right_layout"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textSize="25dp"
+                        android:text="BMI"
+                        android:textColor="@color/colorBase" />
+                    <TextView
+                        android:id="@+id/bmi"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:text="0.00"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textSize="25dp"
+                        android:text="BMR"
+                        android:textColor="@color/colorBase" />
+                    <TextView
+                        android:id="@+id/bmr"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:text="0.00"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textSize="25dp"
+                        android:text="Ideal Weight"
+                        android:textColor="@color/colorBase" />
+                    <TextView
+                        android:id="@+id/ideal_weight"
+                        android:layout_marginBottom="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:text="0.00"
+                        android:textColor="#000000" />
+
+                    <Button
+                        android:id="@+id/input_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="15sp"
+                        android:text="Input Data"></Button>
+
+                    <Button
+                        android:id="@+id/calculate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="15sp"
+                        android:text="Calculate"></Button>
+
+                </LinearLayout>
+
+
+            </GridLayout>
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="20dp"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/risk_score">
+            </ImageView>
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/risk_score"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                ></com.github.mikephil.charting.charts.PieChart>
+        </LinearLayout>
+
+    </ScrollView>
+</FrameLayout>
