@@ -202,6 +202,8 @@ public class ControlFragment extends Fragment {
             inputData.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+
                     Intent intent = new Intent(getActivity(), InputForScaleActivity.class);
                     intent.putExtra("product", product);
 

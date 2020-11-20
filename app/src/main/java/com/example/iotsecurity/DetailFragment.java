@@ -107,7 +107,11 @@ public class DetailFragment extends Fragment {
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                temp = snapshot.child(lightNum).getValue(Product.class);
+                if(product.category.equals("전구"))
+                    temp = snapshot.child(lightNum).getValue(Product.class);
+                // 체중계용 id
+                else if(product.category.equals("체중계"))
+                    temp = snapshot.child("3").getValue(Product.class);
 
                 // 불러온 값을 채우기
                 name.setText(temp.name);
@@ -125,6 +129,7 @@ public class DetailFragment extends Fragment {
                 cycle.setText(temp.cycle);
                 period.setText(String.valueOf(temp.period));
                 infoType.setText(temp.infoType);
+                data.setText(temp.data);
                 if(temp.always == 1)
                     always.setText("수집안함");
                 else if(temp.always == 2)
