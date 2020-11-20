@@ -220,6 +220,16 @@ public class SearchActivity<i> extends AppCompatActivity {
             productVec.addElement((Double) 0.0);
             productVec.addElement((Double) 1.0);
         }
+
+        if(product.category.equals("체중계"))
+            productVec.addElement((Double)1.0);
+        else
+            productVec.addElement((Double)0.0);
+
+        if(product.provider.equals("샤오미"))
+            productVec.addElement((Double)1.0);
+        else
+            productVec.addElement((Double)0.0);
         return productVec;
     }
 
@@ -292,6 +302,8 @@ public class SearchActivity<i> extends AppCompatActivity {
                 vector.addElement(Double.parseDouble(tokens[11]));
                 vector.addElement(Double.parseDouble(tokens[12]));
                 vector.addElement(Double.parseDouble(tokens[13]));
+                vector.addElement(Double.parseDouble(tokens[14]));
+                vector.addElement(Double.parseDouble(tokens[15]));
                 sample.setVector(vector);
                 devices.add(sample);
             }

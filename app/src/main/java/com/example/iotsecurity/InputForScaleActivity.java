@@ -81,14 +81,13 @@ public class InputForScaleActivity extends AppCompatActivity {
                     /**
                      * weight 연동 추가 예정
                      */
-                    double weight = 50.0;
+                    double weight = Double.parseDouble(weightTV.getText().toString());
 
                     double age = Double.parseDouble(ageEdit.getText().toString());
                     double height = Double.parseDouble(heightEdit.getText().toString());
 
                     RadioButton tmpButton = findViewById(genderGroup.getCheckedRadioButtonId());
                     String gender = tmpButton.getText().toString();
-                    Log.d("WHAT IS GENDER????", ""+age);
 
                     JSONObject dataForDB = new JSONObject();
 
@@ -98,7 +97,6 @@ public class InputForScaleActivity extends AppCompatActivity {
                     dataForDB.put("gender", gender);
 
                     product.data = dataForDB.toString();
-                    Log.d("TESTTESTSETSETSETSET ", product.data);
                     mDatabase.child("3").setValue(product);
                 } catch (JSONException e) {
                     e.printStackTrace();
