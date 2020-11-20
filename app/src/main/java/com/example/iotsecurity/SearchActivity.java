@@ -48,6 +48,7 @@ public class SearchActivity<i> extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search2);
 
+
         String productNum = getIntent().getExtras().get("productNum").toString();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Products").child(productNum);
 
@@ -78,7 +79,7 @@ public class SearchActivity<i> extends AppCompatActivity {
                 dataForDB.infoType = beforeDB.infoType;
                 dataForDB.deviceType = beforeDB.deviceType;
                 dataForDB.serviceType = beforeDB.serviceType;
-                dataForDB.resourceType = "oic.r.light.brightness, oic.r.light.dimming, oic.r.light.raptime, oic.r.switch.binary";
+                dataForDB.resourceType = beforeDB.resourceType;
 
                 /**
                  * GET Time Test

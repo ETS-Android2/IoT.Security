@@ -44,6 +44,7 @@ public class SearchActivity2 extends AppCompatActivity {
         name.setText(product.name);
         provider.setText(product.provider);
         category.setText(product.category);
+        data.setText(product.data);
         modelId.setText(product.modelId);
         piId.setText(product.piId);
         productName.setText(product.productName);

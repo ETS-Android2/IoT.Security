@@ -197,9 +197,8 @@ public class AddByWifiActivity extends AppCompatActivity {
                 light.portable = false;
                 light.agree = false;
                 light.deviceType = "";
-//                light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
-//                        "oic.r.light.raptime, oic.r.switch.binary";
-                light.resourceType = "";
+                light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
+                        "oic.r.light.raptime, oic.r.switch.binary";
                 light.serviceType = "";
                 light.always = 0;
                 light.infoType = "";

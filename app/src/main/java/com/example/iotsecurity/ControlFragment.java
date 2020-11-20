@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +25,11 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -197,12 +203,33 @@ public class ControlFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), InputForScaleActivity.class);
-                    intent.putExtra("height", height);
-                    intent.putExtra("age", age);
-                    intent.putExtra("weight", weight);
-                    intent.putExtra("gender", gender);
+                    intent.putExtra("product", product);
 
-                    startActivityForResult(intent, 0);
+                    startActivity(intent);
+
+                    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+                    mDatabase.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Product temp = (Product)snapshot.child("3").getValue(Product.class);
+                            try {
+                                JSONObject tempData = new JSONObject(temp.data);
+
+                                heightTV.setText(tempData.get("height").toString());
+                                ageTV.setText(tempData.get("age").toString());
+                                weightTV.setText(tempData.get("weight").toString());
+                                genderTV.setText(tempData.get("gender").toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
+                    });
+
                 }
             });
             calculate.setOnClickListener(new View.OnClickListener() {
@@ -240,7 +267,9 @@ public class ControlFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+
         Bundle bundle = data.getExtras();
+        Toast.makeText(this.getContext(), bundle.toString(), Toast.LENGTH_SHORT);
 
         heightTV.setText("" + bundle.get("height"));
         ageTV.setText("" + bundle.get("age"));
@@ -265,14 +294,16 @@ public class ControlFragment extends Fragment {
     private double getBMR(double height, double age, double weight, String gender) {
         double result = 0.0;
         if(gender.equals("female")) {
-            result = 864.6 + weight * 10.2036;
-            result -= height * 0.39336;
-            result -= age * 6.204;
+            result = 655;
+            result += weight * 9.6;
+            result += height * 1.8;
+            result -= age * 4.7;
         }
         else if(gender.equals("male")) {
-            result = 877.8 + weight * 14.916;
-            result -= height * 0.726;
-            result -= age * 8.976;
+            result = 66;
+            result += weight * 13.7;
+            result += height * 5;
+            result -= age * 6.8;
         }
         else
             result = -1;

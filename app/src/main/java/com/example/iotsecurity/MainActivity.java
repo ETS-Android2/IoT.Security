@@ -1,12 +1,14 @@
 package com.example.iotsecurity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.icu.util.DateInterval;
 import android.os.Bundle;
 
@@ -93,6 +95,13 @@ public class MainActivity extends AppCompatActivity {
         public void addItem(Fragment item) {
             fragments.add(item);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Fragment fragment = getSupportFragmentManager().getFragments().get(0);
+        fragment.onActivityResult(0, 0, data);
     }
 
     private void makeRequest(String baseUrl){
