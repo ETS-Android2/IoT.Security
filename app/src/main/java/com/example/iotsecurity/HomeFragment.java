@@ -92,9 +92,10 @@ public class HomeFragment extends Fragment {
                  * 전체 제품 리스트 출력
                  * 1번 제품이 없는 경우 예외 발
                  */
-                for(int i=1; i<=snapshot.getChildrenCount(); i++) {
+                for(int i=1; i<=3; i++) {
                     temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
-                    products.add(temp);
+                    if(temp != null)
+                        products.add(temp);
                 }
 
                 ArrayList<BarEntry> valuesDevice = new ArrayList<>();

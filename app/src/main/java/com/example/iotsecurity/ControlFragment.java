@@ -219,9 +219,25 @@ public class ControlFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), InputForScaleActivity.class);
-                    intent.putExtra("product", product);
 
-                    startActivity(intent);
+                    try {
+                        JSONObject productData = new JSONObject();
+
+                        productData.put("age", age);
+                        productData.put("height", height);
+                        productData.put("weight", weight);
+                        productData.put("gender", gender);
+
+
+                        product.data = productData.toString();
+
+                        intent.putExtra("product", product);
+
+                        startActivity(intent);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
 
 
                     mDatabase.addValueEventListener(new ValueEventListener() {
@@ -253,13 +269,19 @@ public class ControlFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     double temp = 0.0;
-                    temp = getBMI(height, age, weight, gender);
+
+                    double heightTmp = Double.parseDouble((String)heightTV.getText());
+                    double ageTmp = Double.parseDouble((String)ageTV.getText());
+                    double weightTmp = Double.parseDouble((String)weightTV.getText());
+                    String genderTmp = (String)genderTV.getText();
+
+                    temp = getBMI(heightTmp, ageTmp, weightTmp, genderTmp);
                     bmiTV.setText("" + temp);
 
-                    temp = getBMR(height, age, weight, gender);
+                    temp = getBMR(heightTmp, ageTmp, weightTmp, genderTmp);
                     bmrTV.setText("" + temp);
 
-                    temp = getIdealWeight(height, age, weight, gender);
+                    temp = getIdealWeight(heightTmp, ageTmp, weightTmp, genderTmp);
                     idealWeightTV.setText("" + temp);
 
                 }
@@ -320,9 +342,9 @@ public class ControlFragment extends Fragment {
         else if(gender.equals("Male") && result > 2322)
             result = 5000;
 
-        // set maximum or minimum
-        if(result > 10000 || result <500)
-            result = -1;
+//        // set maximum or minimum
+//        if(result > 10000 || result <500)
+//            result = -1;
 
         result = Math.round(result * 100) / 100.0;
 
@@ -334,8 +356,8 @@ public class ControlFragment extends Fragment {
 
         result = Math.round(result*100) / 100.0;
         // set maximum or minimum
-        if(result > 90 || result < 10)
-            result = -1;
+//        if(result > 90 || result < 10)
+//            result = -1;
 
         return result;
     }
