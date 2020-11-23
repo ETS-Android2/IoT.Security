@@ -450,6 +450,7 @@ public class SearchActivity<i> extends AppCompatActivity {
 
     private double getCountScore(long period, double weight) {
         return (double)period / 1000 * weight;
+
     }
 
     private double getMeasureScore(int always, double weight) {

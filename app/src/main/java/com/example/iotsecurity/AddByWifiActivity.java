@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
@@ -25,8 +27,11 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -74,7 +79,7 @@ public class AddByWifiActivity extends AppCompatActivity {
                     isWifiText.setText("Not Connected");
             }
         });
-        // baseUrl -> "http://192.168.0.7/api/"
+
         searchProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,69 +167,94 @@ public class AddByWifiActivity extends AppCompatActivity {
     }
 
     private void processResponse(JSONObject response) throws JSONException {
-        JSONObject lightList = response.getJSONObject("lights");
-        JSONObject lightJson, state;
-        Product light = new Product();
-        boolean isNothing = true;       // 감지되는 제품이 있는지?
-        for (int i = 1; i<lightList.length(); i++) {
-            lightJson = lightList.getJSONObject(String.valueOf(i));
-            state = lightJson.getJSONObject("state");
-            if(state.getBoolean("reachable")) {
-                isNothing = false;
+        final JSONObject lightList = response.getJSONObject("lights");
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                String name = lightJson.getString("name");
-                String provider = lightJson.getString("manufacturername");
-                String modelId = lightJson.getString("modelid");
-                String piId = lightJson.getString("productid");
-                String productName = lightJson.getString("productname");
-                JSONObject usingData = new JSONObject();
-                usingData.put("on", state.getString("on"));
-                usingData.put("bri", state.getString("bri"));
-                usingData.put("hue", state.getString("hue"));
-                usingData.put("sat", state.getString("sat"));
+                int count = (int)snapshot.getChildrenCount();
+                JSONObject lightJson, state;
+                Product light = new Product();
+                boolean isNothing = true;       // 감지되는 제품이 있는지?
 
-                light = new Product();
-                light.name = name;
-                light.provider = provider;
-                light.modelId = modelId;
-                light.piId = piId;
-                light.productName = productName;
-                light.data = usingData.toString();
+                Product temp;
 
-                light.category = "전구";
-                light.connection = "wifi";
-                light.display = false;
-                light.portable = false;
-                light.agree = false;
-                light.deviceType = "";
-                light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
-                        "oic.r.light.raptime, oic.r.switch.binary";
-                light.serviceType = "";
-                light.always = 0;
-                light.infoType = "";
-                light.score = -1;
+                for (int i = 1; i<lightList.length(); i++) {
+                    try {
+                        temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
+                        if (temp != null)
+                            continue;
 
-                /**
-                 * DB에는 연결된 시각을 저장
-                 * 불러오거나 넣을때 마다 period +1
-                 * cycle은 연결해제(삭제) 할때까지 유지
-                 * detail fragment 에서 데이터 출력할 때에는 연결 기간으로 (현재시각 - 연결시각)
-                 */
-                long now = System.currentTimeMillis();
-                Date date = new Date(now);
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
-                light.cycle = dateFormat.format(date);
-                light.period = 1;
+                        lightJson = lightList.getJSONObject(String.valueOf(i));
 
-                Intent intent = new Intent(this, SearchActivity2.class);
-                intent.putExtra("product", light);
-                intent.putExtra("productNum", i);
-                startActivity(intent);
-                finish();
-                mDatabase.child("" + i).setValue(light);
+                        state = lightJson.getJSONObject("state");
+                        if(state.getBoolean("reachable")) {
+                            isNothing = false;
+
+                            String name = lightJson.getString("name");
+                            String provider = lightJson.getString("manufacturername");
+                            String modelId = lightJson.getString("modelid");
+                            String piId = lightJson.getString("productid");
+                            String productName = lightJson.getString("productname");
+                            JSONObject usingData = new JSONObject();
+                            usingData.put("on", state.getString("on"));
+                            usingData.put("bri", state.getString("bri"));
+                            usingData.put("hue", state.getString("hue"));
+                            usingData.put("sat", state.getString("sat"));
+
+                            light = new Product();
+                            light.name = name;
+                            light.provider = provider;
+                            light.modelId = modelId;
+                            light.piId = piId;
+                            light.productName = productName;
+                            light.data = usingData.toString();
+
+                            light.category = "전구";
+                            light.connection = "wifi";
+                            light.display = false;
+                            light.portable = false;
+                            light.agree = false;
+                            light.deviceType = "";
+                            light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
+                                    "oic.r.light.raptime, oic.r.switch.binary";
+                            light.serviceType = "";
+                            light.always = 0;
+                            light.infoType = "";
+                            light.score = -1;
+
+                            /**
+                             * DB에는 연결된 시각을 저장
+                             * 불러오거나 넣을때 마다 period +1
+                             * cycle은 연결해제(삭제) 할때까지 유지
+                             * detail fragment 에서 데이터 출력할 때에는 연결 기간으로 (현재시각 - 연결시각)
+                             */
+                            long now = System.currentTimeMillis();
+                            Date date = new Date(now);
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
+                            light.cycle = dateFormat.format(date);
+                            light.period = 1;
+
+                            Intent intent = new Intent(getApplicationContext(), SearchActivity2.class);
+                            intent.putExtra("product", light);
+                            intent.putExtra("productNum", i);
+                            startActivity(intent);
+                            finish();
+                            mDatabase.child("" + i).setValue(light);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(isNothing)
+                    Toast.makeText(getApplicationContext(), "Nothing Detected", Toast.LENGTH_SHORT).show();
+
             }
-        }
-        if(isNothing)
-            Toast.makeText(this, "Nothing Detected", Toast.LENGTH_SHORT).show();
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

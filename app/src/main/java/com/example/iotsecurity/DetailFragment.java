@@ -30,6 +30,10 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * DPD 프래그먼트
  * url뒤에 lights/1(or 2 or 3)등을 붙임으로서 개별 제어 가능(개별 정보 get은 불가능)
@@ -137,6 +141,18 @@ public class DetailFragment extends Fragment {
                 else
                     always.setText("상시 수집");
 
+                long now = System.currentTimeMillis();
+                Date date = new Date(now);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
+                Date tempDate = null;
+                try {
+                    tempDate = dateFormat.parse(temp.cycle);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                long resultForPrint = (date.getTime() - tempDate.getTime()) / (1000 * 60 * 60);
+                cycle.setText("" + resultForPrint);
+
 
                 // 출력 버튼 동작
                 out.setOnClickListener(new View.OnClickListener() {
@@ -170,15 +186,23 @@ public class DetailFragment extends Fragment {
                                 jsonForOut.put("deviceType", temp.deviceType);
                             if(checkServiceType.isChecked())
                                 jsonForOut.put("serviceType", temp.serviceType);
-                            if(checkCycle.isChecked())
-                                jsonForOut.put("cycle", temp.cycle);
+                            if(checkCycle.isChecked()) {
+                                long now = System.currentTimeMillis();
+                                Date date = new Date(now);
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
+                                Date tempDate = dateFormat.parse(temp.cycle);
+                                long resultForPrint = (date.getTime() - tempDate.getTime()) / (1000 * 60 * 60);
+                                // 1000(ms) * 60(s) * 60(m) (Convert to hours)
+                                jsonForOut.put("cycle", resultForPrint);
+                            }
                             if(checkPeriod.isChecked())
                                 jsonForOut.put("period", String.valueOf(temp.period));
+
                             if(checkInfoType.isChecked())
                                 jsonForOut.put("infoType", temp.infoType);
                             if(checkData.isChecked())
                                 jsonForOut.put("data", temp.data);
-                        } catch (JSONException e) {
+                        } catch (JSONException | ParseException e) {
                             e.printStackTrace();
                         }
                         Intent intent = new Intent(getActivity(), OutputActivity.class);

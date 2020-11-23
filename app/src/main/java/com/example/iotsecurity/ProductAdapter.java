@@ -1,14 +1,19 @@
 package com.example.iotsecurity;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -37,6 +42,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.myViewHo
      */
     class myViewHolder extends RecyclerView.ViewHolder {
         TextView score, name, provider, category;
+        Button deleteButton;
 
         public final View layout;
 
@@ -53,6 +59,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.myViewHo
             name = itemView.findViewById(R.id.name);
             provider = itemView.findViewById(R.id.provider);
             category = itemView.findViewById(R.id.category);
+//            deleteButton = itemView.findViewById(R.id.delete);
+
+//            deleteButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+//
+//                }
+//            });
             layout = itemView;
 
             itemView.setOnClickListener(new View.OnClickListener() {

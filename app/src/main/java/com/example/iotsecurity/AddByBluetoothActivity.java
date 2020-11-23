@@ -3,9 +3,11 @@ package com.example.iotsecurity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -17,6 +19,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,16 +96,38 @@ public class AddByBluetoothActivity extends AppCompatActivity {
         searchProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Product scale = null;
                 try {
-                    Product scale = makeTempScale();
-                    Intent intent = new Intent(getApplicationContext(), SearchActivity2.class);
-                    intent.putExtra("product", scale);
-                    intent.putExtra("productNum", 3);
-                    startActivity(intent);
-                    finish();
+                    scale = makeTempScale();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                String agreementMsg = "현재 시간 (" + scale.cycle + ")부로 Xaomi의 Mi scale2는 사용자의 " +
+                        "나이, 성별, 키, 몸무게 개인 정보를 수집 또는 측정하며 현재 장치 이외에  클라우드에 데이터를 " +
+                        "저장 또는 전송하지 않습니다. 장치 사용에 동의하십니까?";
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddByBluetoothActivity.this);
+                    builder.setTitle("사용자 동의");
+                    builder.setMessage(agreementMsg);
+                final Product finalScale = scale;
+                builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            Intent intent = new Intent(AddByBluetoothActivity.this, SearchActivity2.class);
+                            intent.putExtra("product", finalScale);
+                            intent.putExtra("productNum", 3);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                    builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(getApplication(), "제품 등록을 위해서는 동의가 필요합니다.", Toast.LENGTH_SHORT);
+                            finish();
+                        }
+                    });
+                    builder.show();
             }
         });
     }
@@ -145,30 +171,6 @@ public class AddByBluetoothActivity extends AppCompatActivity {
         temp.period = 1;
 
         return temp;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
-            case 10:
-                if(requestCode == RESULT_OK);
-
-        }
-    }
-
-    private void selectBluetoothDevice() {
-
-    }
-
-    private boolean checkBluetooth(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
-        NetworkCapabilities isWifi = cm.getNetworkCapabilities(cm.getActiveNetwork());
-        if(isWifi != null) {
-            if(isWifi.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
-                return true;
-        }
-        return false;
     }
 
 }

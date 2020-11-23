@@ -80,8 +80,9 @@ public class ProductFragment extends Fragment {
                         /**
                          * 전체 제품 리스트 출력
                          * 1번 제품이 없는 경우 예외 발생
+                         * 테스트 기간 동안 총 3개 고정(전구 2개, 체중계 1개)
                          */
-                        for(int i=1; i<=snapshot.getChildrenCount(); i++) {
+                        for(int i=1; i<=3; i++) {
                             temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
                             if(temp != null) {
                                 if (temp.score <= targetScore) {

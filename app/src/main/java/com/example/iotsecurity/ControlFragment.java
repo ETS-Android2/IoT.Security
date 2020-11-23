@@ -1,8 +1,12 @@
 package com.example.iotsecurity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +63,9 @@ public class ControlFragment extends Fragment {
     TextView heightTV, ageTV, weightTV, genderTV;
     TextView bmiTV, bmrTV, idealWeightTV;
 
+
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+
     public ControlFragment() {
     }
 
@@ -76,11 +83,13 @@ public class ControlFragment extends Fragment {
 
             // 전구 번호 추출
             String lightNum = product.name.replaceAll("[^0-9]", "");
+            final String idForDB = lightNum;
 
             requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
             baseUrl = String.format("http://192.168.0.9/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
             baseUrl = baseUrl + lightNum + "/";
             makeRequest(baseUrl);
+            addPeriod(idForDB);
 
             // Chart 세팅
             pieChart = (PieChart) rootView.findViewById(R.id.risk_score);
@@ -108,6 +117,7 @@ public class ControlFragment extends Fragment {
                         on = true;
                     }
                     makePutRequest(baseUrl);
+                    addPeriod(idForDB);
                 }
 
                 @Override
@@ -128,6 +138,7 @@ public class ControlFragment extends Fragment {
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     sat = seekBar.getProgress();
                     makePutRequest(baseUrl);
+                    addPeriod(idForDB);
                 }
 
                 @Override
@@ -148,6 +159,7 @@ public class ControlFragment extends Fragment {
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     hue = seekBar.getProgress();
                     makePutRequest(baseUrl);
+                    addPeriod(idForDB);
                 }
 
                 @Override
@@ -162,9 +174,13 @@ public class ControlFragment extends Fragment {
 
         }
 
+
+
         // 체중계일 때 동작할 화면
         else if(product.category.equals("체중계")) {
             rootView = (ViewGroup) inflater.inflate(R.layout.control_fragment_scale, container, false);
+
+
             final double height, age, weight;
             final String gender;
             JSONObject productData = null;
@@ -202,17 +218,16 @@ public class ControlFragment extends Fragment {
             inputData.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-
                     Intent intent = new Intent(getActivity(), InputForScaleActivity.class);
                     intent.putExtra("product", product);
 
                     startActivity(intent);
 
-                    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+
                     mDatabase.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                             Product temp = (Product)snapshot.child("3").getValue(Product.class);
                             try {
                                 JSONObject tempData = new JSONObject(temp.data);
@@ -262,78 +277,68 @@ public class ControlFragment extends Fragment {
             PieData data = new PieData(dataSet);
             pieChart.setData(data);
         }
+
+
+
         return rootView;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-        Bundle bundle = data.getExtras();
-        Toast.makeText(this.getContext(), bundle.toString(), Toast.LENGTH_SHORT);
-
-        heightTV.setText("" + bundle.get("height"));
-        ageTV.setText("" + bundle.get("age"));
-        weightTV.setText("" + bundle.get("weight"));
-        genderTV.setText(bundle.get("gender").toString());
-
     }
 
     private double getIdealWeight(double height, double age, double weight, String gender) {
         double result = 0.0;
 
-        if(gender.equals("male"))
-            result = (height - 80) * 0.7;
-        else if(gender.equals("female"))
-            result = (height - 70) * 0.6;
+        if(gender.equals("Male"))
+            result = (height / 100) * (height / 100) * 22;
+        else if(gender.equals("Female"))
+            result = (height / 100) * 100 * 21;
         else
             result = 2; // ideal weight 구하는 식은 여러 종류이며 종류별로 결과가 다름.
 
+        result = Math.round(result * 100) / 100.0;
         return result;
     }
 
     private double getBMR(double height, double age, double weight, String gender) {
         double result = 0.0;
-        if(gender.equals("female")) {
-            result = 655;
-            result += weight * 9.6;
-            result += height * 1.8;
-            result -= age * 4.7;
+        if(gender.equals("Female")) {
+            result = 447.593;
+            result += weight * 9.247;
+            result += height * 3.098;
+            result -= age * 4.330;
         }
-        else if(gender.equals("male")) {
-            result = 66;
-            result += weight * 13.7;
-            result += height * 5;
-            result -= age * 6.8;
+        else if(gender.equals("Male")) {
+            result = 88.362;
+            result += weight * 13.397;
+            result += height * 4.799;
+            result -= age * 5.677;
         }
         else
             result = -1;
 
         // Capping
-        if(gender.equals("female") && result > 2996)
+        if(gender.equals("Female") && result > 2996)
             result = 5000;
-        else if(gender.equals("male") && result > 2322)
+        else if(gender.equals("Male") && result > 2322)
             result = 5000;
 
         // set maximum or minimum
         if(result > 10000 || result <500)
             result = -1;
 
+        result = Math.round(result * 100) / 100.0;
+
         return result;
     }
-
 
     private double getBMI(double height, double age, double weight, String gender) {
         double result = weight / ((height/100) * (height/100));
 
+        result = Math.round(result*100) / 100.0;
         // set maximum or minimum
         if(result > 90 || result < 10)
             result = -1;
 
         return result;
     }
-
 
     private void makeRequest(String baseUrl) {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener<JSONObject>() {
@@ -387,9 +392,31 @@ public class ControlFragment extends Fragment {
             }
         });
 
+
         // 조작이 끝났으므로 url 초기화
         baseUrl = baseUrl.replaceAll("state/", "");
         request.setShouldCache(false);
         requestQueue.add(request);
+    }
+
+    private void addPeriod(final String idForDB) {
+        /**
+         * 연결될 때(제품 제어 및 데이터 조회)마다 횟수 증가
+         * database 연결 후 period +1 해서 다시 저장
+         */
+        mDatabase.child(idForDB).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Product temp = snapshot.getValue(Product.class);
+                temp.period += 1;
+
+                mDatabase.child(idForDB).setValue(temp);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

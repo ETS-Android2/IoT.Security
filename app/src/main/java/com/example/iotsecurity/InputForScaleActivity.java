@@ -1,5 +1,6 @@
 package com.example.iotsecurity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,8 +14,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,6 +65,7 @@ public class InputForScaleActivity extends AppCompatActivity {
         inputComplete = findViewById(R.id.button_complete);
         syncScale = findViewById(R.id.button_sync);
 
+        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
         /**
          * TEST VER
          * 임의 체중 입력
@@ -73,7 +78,7 @@ public class InputForScaleActivity extends AppCompatActivity {
         });
 
         // 하드 코딩 : 체중계는 무조건 하나
-        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
+
         inputComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +102,12 @@ public class InputForScaleActivity extends AppCompatActivity {
                     dataForDB.put("gender", gender);
 
                     product.data = dataForDB.toString();
+
+                    /**
+                     * 연결될 때(제품 제어 및 데이터 조회)마다 횟수 증가
+                     * database 연결 후 period +1 해서 다시 저장
+                     */
+                    product.period += 1;
                     mDatabase.child("3").setValue(product);
                 } catch (JSONException e) {
                     e.printStackTrace();
