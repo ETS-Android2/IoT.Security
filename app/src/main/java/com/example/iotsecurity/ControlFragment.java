@@ -244,6 +244,7 @@ public class ControlFragment extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+                            // 하드 코딩
                             Product temp = (Product)snapshot.child("3").getValue(Product.class);
                             try {
                                 JSONObject tempData = new JSONObject(temp.data);

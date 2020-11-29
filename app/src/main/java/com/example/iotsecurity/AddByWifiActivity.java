@@ -181,6 +181,8 @@ public class AddByWifiActivity extends AppCompatActivity {
 
                 for (int i = 1; i<lightList.length(); i++) {
                     try {
+
+                        // DB에 해당 전구가 이미 있으면 등록하지 않음
                         temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
                         if (temp != null)
                             continue;

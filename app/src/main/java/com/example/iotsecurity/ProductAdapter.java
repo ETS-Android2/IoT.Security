@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -42,7 +43,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.myViewHo
      */
     class myViewHolder extends RecyclerView.ViewHolder {
         TextView score, name, provider, category;
-        Button deleteButton;
+        ImageButton deleteButton;
 
         public final View layout;
 
@@ -59,15 +60,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.myViewHo
             name = itemView.findViewById(R.id.name);
             provider = itemView.findViewById(R.id.provider);
             category = itemView.findViewById(R.id.category);
-//            deleteButton = itemView.findViewById(R.id.delete);
+            deleteButton = itemView.findViewById(R.id.delete);
 
-//            deleteButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
-//
-//                }
-//            });
+
             layout = itemView;
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -89,12 +84,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.myViewHo
          * @param item
          */
         public void setItem(Product item) {
+            final Product tmp = item;
 
+            score.setText(String.valueOf(tmp.score));
+            name.setText(tmp.name);
+            provider.setText(tmp.provider);
+            category.setText(tmp.category);
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
 
-            score.setText(String.valueOf(item.score));
-            name.setText(item.name);
-            provider.setText(item.provider);
-            category.setText(item.category);
+                    // 하드 코딩
+                    if(tmp.category.equals("전구")) {
+                        String lightNum = tmp.name.replaceAll("[^0-9]", "");
+                        mDatabase.child(lightNum).removeValue();
+                    } else if (tmp.category.equals("체중계")) {
+                        mDatabase.child("3").removeValue();
+                    }
+                }
+            });
         }
     }
 

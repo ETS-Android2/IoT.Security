@@ -113,7 +113,7 @@ public class DetailFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(product.category.equals("전구"))
                     temp = snapshot.child(lightNum).getValue(Product.class);
-                // 체중계용 id
+                // 체중계용 id , 하드 코딩
                 else if(product.category.equals("체중계"))
                     temp = snapshot.child("3").getValue(Product.class);
 
@@ -130,8 +130,8 @@ public class DetailFragment extends Fragment {
                 agree.setText(String.valueOf(temp.agree));
                 deviceType.setText(temp.deviceType);
                 serviceType.setText(temp.serviceType);
-                cycle.setText(temp.cycle);
-                period.setText(String.valueOf(temp.period));
+                cycle.setText(temp.cycle +" 시간");
+                period.setText(String.valueOf(temp.period) + " 회");
                 infoType.setText(temp.infoType);
                 data.setText(temp.data);
                 if(temp.always == 1)
