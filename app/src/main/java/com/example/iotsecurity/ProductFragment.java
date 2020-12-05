@@ -57,7 +57,7 @@ public class ProductFragment extends Fragment {
 
     // hue api hub 아이피 주소
     String baseUrl;
-    String addUrl = String.format("http://192.168.0.9/api/");
+    String addUrl = String.format("http://192.168.0.7/api/");
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.product_fragment, container, false);

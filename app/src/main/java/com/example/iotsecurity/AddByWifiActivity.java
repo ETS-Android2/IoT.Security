@@ -169,88 +169,90 @@ public class AddByWifiActivity extends AppCompatActivity {
     private void processResponse(JSONObject response) throws JSONException {
         final JSONObject lightList = response.getJSONObject("lights");
         mDatabase.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int count = 0; // OnDataChange는 데이터에 변화가 있을때마다 실행됨. -> 1번만 실행되게 하기 위한 카운트
 
-                int count = (int)snapshot.getChildrenCount();
-                JSONObject lightJson, state;
-                Product light = new Product();
-                boolean isNothing = true;       // 감지되는 제품이 있는지?
+                if(count == 0) {
+                    JSONObject lightJson, state;
+                    Product light = new Product();
+                    boolean isNothing = true;       // 감지되는 제품이 있는지?
 
-                Product temp;
+                    Product temp;
 
-                for (int i = 1; i<lightList.length(); i++) {
-                    try {
+                    for (int i = 1; i < lightList.length(); i++) {
+                        try {
 
-                        // DB에 해당 전구가 이미 있으면 등록하지 않음
-                        temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
-                        if (temp != null)
-                            continue;
+                            // DB에 해당 전구가 이미 있으면 등록하지 않음
+                            temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
+                            if (temp != null)
+                                continue;
 
-                        lightJson = lightList.getJSONObject(String.valueOf(i));
+                            lightJson = lightList.getJSONObject(String.valueOf(i));
 
-                        state = lightJson.getJSONObject("state");
-                        if(state.getBoolean("reachable")) {
-                            isNothing = false;
+                            state = lightJson.getJSONObject("state");
+                            if (state.getBoolean("reachable")) {
+                                isNothing = false;
 
-                            String name = lightJson.getString("name");
-                            String provider = lightJson.getString("manufacturername");
-                            String modelId = lightJson.getString("modelid");
-                            String piId = lightJson.getString("productid");
-                            String productName = lightJson.getString("productname");
-                            JSONObject usingData = new JSONObject();
-                            usingData.put("on", state.getString("on"));
-                            usingData.put("bri", state.getString("bri"));
-                            usingData.put("hue", state.getString("hue"));
-                            usingData.put("sat", state.getString("sat"));
+                                String name = lightJson.getString("name");
+                                String provider = lightJson.getString("manufacturername");
+                                String modelId = lightJson.getString("modelid");
+                                String piId = lightJson.getString("productid");
+                                String productName = lightJson.getString("productname");
+                                JSONObject usingData = new JSONObject();
+                                usingData.put("on", state.getString("on"));
+                                usingData.put("bri", state.getString("bri"));
+                                usingData.put("hue", state.getString("hue"));
+                                usingData.put("sat", state.getString("sat"));
 
-                            light = new Product();
-                            light.name = name;
-                            light.provider = provider;
-                            light.modelId = modelId;
-                            light.piId = piId;
-                            light.productName = productName;
-                            light.data = usingData.toString();
+                                light = new Product();
+                                light.name = name;
+                                light.provider = provider;
+                                light.modelId = modelId;
+                                light.piId = piId;
+                                light.productName = productName;
+                                light.data = usingData.toString();
 
-                            light.category = "전구";
-                            light.connection = "wifi";
-                            light.display = false;
-                            light.portable = false;
-                            light.agree = false;
-                            light.deviceType = "";
-                            light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
-                                    "oic.r.light.raptime, oic.r.switch.binary";
-                            light.serviceType = "";
-                            light.always = 0;
-                            light.infoType = "";
-                            light.score = -1;
+                                light.category = "전구";
+                                light.connection = "wifi";
+                                light.display = false;
+                                light.portable = false;
+                                light.agree = false;
+                                light.deviceType = "";
+                                light.resourceType = "oic.r.light.brigtness, oic.r.light.dimming, " +
+                                        "oic.r.light.raptime, oic.r.switch.binary";
+                                light.serviceType = "";
+                                light.always = 0;
+                                light.infoType = "";
+                                light.score = -1;
 
-                            /**
-                             * DB에는 연결된 시각을 저장
-                             * 불러오거나 넣을때 마다 period +1
-                             * cycle은 연결해제(삭제) 할때까지 유지
-                             * detail fragment 에서 데이터 출력할 때에는 연결 기간으로 (현재시각 - 연결시각)
-                             */
-                            long now = System.currentTimeMillis();
-                            Date date = new Date(now);
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
-                            light.cycle = dateFormat.format(date);
-                            light.period = 1;
+                                /**
+                                 * DB에는 연결된 시각을 저장
+                                 * 불러오거나 넣을때 마다 period +1
+                                 * cycle은 연결해제(삭제) 할때까지 유지
+                                 * detail fragment 에서 데이터 출력할 때에는 연결 기간으로 (현재시각 - 연결시각)
+                                 */
+                                long now = System.currentTimeMillis();
+                                Date date = new Date(now);
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH:mm", java.util.Locale.getDefault());
+                                light.cycle = dateFormat.format(date);
+                                light.period = 1;
 
-                            Intent intent = new Intent(getApplicationContext(), SearchActivity2.class);
-                            intent.putExtra("product", light);
-                            intent.putExtra("productNum", i);
-                            startActivity(intent);
-                            finish();
-                            mDatabase.child("" + i).setValue(light);
+                                Intent intent = new Intent(getApplicationContext(), SearchActivity2.class);
+                                intent.putExtra("product", light);
+                                intent.putExtra("productNum", i);
+                                startActivity(intent);
+                                finish();
+                                mDatabase.child("" + i).setValue(light);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
+                    if (isNothing) ;
+                    count++;
                 }
-                if(isNothing)
-                    Toast.makeText(getApplicationContext(), "Nothing Detected", Toast.LENGTH_SHORT).show();
-
             }
 
             @Override

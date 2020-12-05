@@ -1,19 +1,14 @@
 package com.example.iotsecurity;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,8 +29,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,10 +79,9 @@ public class ControlFragment extends Fragment {
             final String idForDB = lightNum;
 
             requestQueue = Volley.newRequestQueue(getContext().getApplicationContext());
-            baseUrl = String.format("http://192.168.0.9/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
+            baseUrl = String.format("http://192.168.0.7/api/f-Rz07jDeVeeCZvfVJ-9lDzE051JzHcsLKrXJG0R/lights/");
             baseUrl = baseUrl + lightNum + "/";
-            makeRequest(baseUrl);
-            addPeriod(idForDB);
+            makeRequest(baseUrl, idForDB);
 
             // Chart 세팅
             pieChart = (PieChart) rootView.findViewById(R.id.risk_score);
@@ -116,8 +108,7 @@ public class ControlFragment extends Fragment {
                     else {
                         on = true;
                     }
-                    makePutRequest(baseUrl);
-                    addPeriod(idForDB);
+                    makePutRequest(baseUrl, idForDB);
                 }
 
                 @Override
@@ -130,6 +121,7 @@ public class ControlFragment extends Fragment {
                     bri = seekBar.getProgress();
                 }
             });
+
             // sat 조절
             saturationSeekBar = (SeekBar) rootView.findViewById(R.id.saturation_seekbar);
             saturationSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -137,8 +129,7 @@ public class ControlFragment extends Fragment {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     sat = seekBar.getProgress();
-                    makePutRequest(baseUrl);
-                    addPeriod(idForDB);
+                    makePutRequest(baseUrl, idForDB);
                 }
 
                 @Override
@@ -158,18 +149,14 @@ public class ControlFragment extends Fragment {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     hue = seekBar.getProgress();
-                    makePutRequest(baseUrl);
-                    addPeriod(idForDB);
+                    makePutRequest(baseUrl, idForDB);
                 }
 
                 @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
+                public void onStartTrackingTouch(SeekBar seekBar) { hue = seekBar.getProgress(); }
 
                 @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    makePutRequest(baseUrl);
-                }
+                public void onStopTrackingTouch(SeekBar seekBar) { hue = seekBar.getProgress(); }
             });
 
         }
@@ -363,7 +350,7 @@ public class ControlFragment extends Fragment {
         return result;
     }
 
-    private void makeRequest(String baseUrl) {
+    private void makeRequest(String baseUrl, String deviceId) {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -381,6 +368,7 @@ public class ControlFragment extends Fragment {
         });
         request.setShouldCache(false);
         requestQueue.add(request);
+        addPeriod(deviceId);
     }
 
     private void processResponse(JSONObject response) throws JSONException {
@@ -393,7 +381,7 @@ public class ControlFragment extends Fragment {
         hueSeekBar.setProgress(hue);
     }
 
-    private void makePutRequest(String baseUrl) {
+    private void makePutRequest(String baseUrl, String deviceId) {
         // 조작 정보 json은 state에 추가
         baseUrl = baseUrl + "state/";
         JSONObject putState = new JSONObject();
@@ -420,26 +408,31 @@ public class ControlFragment extends Fragment {
         baseUrl = baseUrl.replaceAll("state/", "");
         request.setShouldCache(false);
         requestQueue.add(request);
+        addPeriod(deviceId);
     }
 
     private void addPeriod(final String idForDB) {
+
         /**
          * 연결될 때(제품 제어 및 데이터 조회)마다 횟수 증가
          * database 연결 후 period +1 해서 다시 저장
          */
-        mDatabase.child(idForDB).addValueEventListener(new ValueEventListener() {
+        mDatabase.child(idForDB).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Product temp = snapshot.getValue(Product.class);
                 temp.period += 1;
 
+
                 mDatabase.child(idForDB).setValue(temp);
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
+
     }
 }

@@ -44,6 +44,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -59,7 +60,7 @@ public class HomeFragment extends Fragment {
 
 
     RequestQueue requestQueue;
-    BarChart deviceList, providerList;
+    BarChart deviceList, providerList, riskyList;
     PieChart riskScore;
 
     public HomeFragment() {
@@ -72,153 +73,241 @@ public class HomeFragment extends Fragment {
         riskScore = (PieChart)rootView.findViewById(R.id.risk_score);
         deviceList = (BarChart)rootView.findViewById(R.id.device_list);
         providerList = (BarChart)rootView.findViewById(R.id.provider_list);
+        riskyList = (BarChart)rootView.findViewById(R.id.risky);
 
         /**
          * DB데이터 시각화
          * MP Android Chart Library
          * Risk Score : Pie Chart
-         * Device List : Horizontal Bar Chart
+         * Device List : Bar Chart
          * Provider List : Bar Chart
-         *
+         * Risky things : Bar Chart
          */
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Products");
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Product temp;
-                ArrayList<Product> products = new ArrayList<Product>();
+                int count = 0;
+                if(count == 0) {
+                    Product temp;
+                    ArrayList<Product> products = new ArrayList<Product>();
 
-                /**
-                 * 전체 제품 리스트 출력
-                 * 1번 제품이 없는 경우 예외 발
-                 */
-                for(int i=1; i<=3; i++) {
-                    temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
-                    if(temp != null)
-                        products.add(temp);
-                }
+                    // 결합 서비스 종류별 항목
+                    final String[] privacyThings = {"금융", "생체"};
+                    final String[] combinedThings = {"키", "나이", "성별", "이미지", "음성", "영상"};
+                    final String[] labelsRisky = {"이동형", "개인정보", "결합정보"};
 
-                ArrayList<BarEntry> valuesDevice = new ArrayList<>();
-                ArrayList<BarEntry> valuesProvider = new ArrayList<>();
-                HashMap<String, Integer> contentCount = new HashMap<String, Integer>();
-                HashMap<String, Integer> providerCount = new HashMap<>();
-                double avgRisk = 0.0;
-
-                // 각 제품이 몇개인지? DATA to hashMap
-                for(int i=0; i<products.size(); i++) {
-                    if(products.get(i) != null) {
-                        String currentCategory = products.get(i).category;
-                        String currentProvider = products.get(i).provider;
-                        if (!contentCount.containsKey(currentCategory))
-                            contentCount.put(currentCategory, 1);
-                        else
-                            contentCount.put(currentCategory, contentCount.get(currentCategory) + 1);
-
-                        if (!providerCount.containsKey(currentProvider))
-                            providerCount.put(currentProvider, 1);
-                        else
-                            providerCount.put(currentProvider, providerCount.get(currentProvider) + 1);
-
-                        avgRisk += products.get(i).score;
+                    /**
+                     * 전체 제품 리스트 출력
+                     * 1번 제품이 없는 경우 예외 발
+                     */
+                    for (int i = 1; i <= 3; i++) {
+                        temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
+                        if (temp != null)
+                            products.add(temp);
                     }
-                }
 
-                Description descrpt = new Description();
-                descrpt.setText("");
+                    ArrayList<BarEntry> valuesDevice = new ArrayList<>();
+                    ArrayList<BarEntry> valuesProvider = new ArrayList<>();
+                    ArrayList<BarEntry> valuesRisky = new ArrayList<>();
+                    HashMap<String, Integer> contentCount = new HashMap<String, Integer>();
+                    HashMap<String, Integer> providerCount = new HashMap<>();
+                    // 위험 정보 초기 설정
+                    HashMap<String, Integer> riskyCount = new HashMap<>();
+                    for (int i = 0; i < labelsRisky.length; i++)
+                        riskyCount.put(labelsRisky[i], 0);
+                    double avgRisk = 0.0;
 
-                // 평균 Risk Score
-                avgRisk = avgRisk / products.size();
-                ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
-                yValues.add(new PieEntry((float)avgRisk));
-                yValues.add(new PieEntry(100-(float)avgRisk));
+                    // 각 제품이 몇개인지? DATA to hashMap
+                    for (int i = 0; i < products.size(); i++) {
+                        if (products.get(i) != null) {
+                            String currentCategory = products.get(i).category;
+                            String currentProvider = products.get(i).provider;
+                            String currentService = products.get(i).serviceType;
+                            boolean portable = products.get(i).portable;
 
-                PieDataSet dataSetForRisk = new PieDataSet(yValues, "");
-                dataSetForRisk.setDrawValues(false);
-                dataSetForRisk.setColors(Color.RED, Color.WHITE);
-                PieData dataForRisk = new PieData(dataSetForRisk);
-                riskScore.setDescription(descrpt);
-                riskScore.setData(dataForRisk);
-                riskScore.invalidate();
+                            // 장치 종류 데이터
+                            if (!contentCount.containsKey(currentCategory))
+                                contentCount.put(currentCategory, 1);
+                            else
+                                contentCount.put(currentCategory, contentCount.get(currentCategory) + 1);
 
-                // hashMap의 key -> labels, value -> values
-                final ArrayList<String> labelsDevice = new ArrayList<String>();
-                final ArrayList<String> labelsProvider = new ArrayList<String>();
-                labelsDevice.addAll(contentCount.keySet());
-                labelsProvider.addAll(providerCount.keySet());
+                            // 장치 제공자 데이터
+                            if (!providerCount.containsKey(currentProvider))
+                                providerCount.put(currentProvider, 1);
+                            else
+                                providerCount.put(currentProvider, providerCount.get(currentProvider) + 1);
 
-                ArrayList<Integer> countsDevice = new ArrayList<Integer>();
-                countsDevice.addAll(contentCount.values());
-                for(int i=0; i<countsDevice.size(); i++) {
-                    valuesDevice.add(new BarEntry(i, countsDevice.get(i)));
-                }
+                            // 위험 정보 데이터
+                            if (portable)
+                                riskyCount.put("이동형", riskyCount.get("이동형") + 1);
+                            for (int j = 0; j < privacyThings.length; j++)
+                                if (currentService.contains(privacyThings[j])) {
+                                    riskyCount.put("개인정보", riskyCount.get("개인정보") + 1);
+                                    break;
+                                }
+                            for (String a : combinedThings) {
+                                if (currentService.contains(a)) {
+                                    riskyCount.put("결합정보", riskyCount.get("결합정보") + 1);
+                                    break;
+                                }
+                            }
 
-                ArrayList<Integer> countsProvider = new ArrayList<Integer>();
-                countsProvider.addAll(contentCount.values());
-                for(int i=0; i<countsProvider.size(); i++) {
-                    valuesProvider.add(new BarEntry(i, countsProvider.get(i)));
-                }
-
-                BarDataSet setDevice, setProvider;
-                setDevice = new BarDataSet(valuesDevice, "단위 : 개");
-                setProvider = new BarDataSet(valuesProvider, "단위 : 개");
-                ArrayList<IBarDataSet> dataSetsDevice = new ArrayList<>();
-                ArrayList<IBarDataSet> dataSetsProvider = new ArrayList<>();
-                dataSetsDevice.add(setDevice);
-                dataSetsProvider.add(setProvider);
-
-                BarData dataDevice = new BarData(dataSetsDevice);
-                BarData dataProvider = new BarData(dataSetsProvider);
-
-                dataProvider.setBarWidth(0.3f);
-                dataDevice.setBarWidth(0.3f);
-
-                // device list x축 설정
-                XAxis xAxis = deviceList.getXAxis();
-                xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-                xAxis.setGranularity(1f);
-                xAxis.setDrawGridLines(false);
-                xAxis.setCenterAxisLabels(false);
-                xAxis.setValueFormatter(new IndexAxisValueFormatter() {
-                    @Override
-                    public String getFormattedValue(float value) {
-                        if((int)value<0 || (int)value > labelsDevice.size())
-                            return " ";
-                        else
-                            return labelsDevice.get((int)value);
+                            avgRisk += products.get(i).score;
+                        }
                     }
-                });
-                // provider list x축 설정
-                xAxis = providerList.getXAxis();
-                xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-                xAxis.setGranularity(1f);
-                xAxis.setDrawGridLines(false);
-                xAxis.setCenterAxisLabels(false);
-                xAxis.setValueFormatter(new IndexAxisValueFormatter() {
-                    @Override
-                    public String getFormattedValue(float value) {
-                        if((int)value<0 || (int)value > labelsProvider.size())
-                            return " ";
-                        else
-                            return labelsProvider.get((int)value);
+
+                    Log.d("ERJADIJFIAJSDF ", riskyCount.toString());
+                    Description descrpt = new Description();
+                    descrpt.setText("");
+
+                    /**
+                     * 1-1. 파이차트
+                     * 평균 Risk Score
+                     */
+                    avgRisk = avgRisk / products.size();
+                    ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
+                    yValues.add(new PieEntry((float) avgRisk));
+                    yValues.add(new PieEntry(100 - (float) avgRisk));
+
+                    PieDataSet dataSetForRisk = new PieDataSet(yValues, "");
+                    dataSetForRisk.setDrawValues(false);
+                    dataSetForRisk.setColors(Color.RED, Color.WHITE);
+                    PieData dataForRisk = new PieData(dataSetForRisk);
+                    riskScore.setDescription(descrpt);
+                    riskScore.setData(dataForRisk);
+                    riskScore.invalidate();
+
+                    /**
+                     * 1-2. 바 차트
+                     * 장치 종류 분포
+                     *
+                     * 2-1. 바 차트
+                     * 장치 제공자 분포
+                     */
+
+
+                    // hashMap의 key -> labels, value -> values
+                    final ArrayList<String> labelsDevice = new ArrayList<String>();
+                    final ArrayList<String> labelsProvider = new ArrayList<String>();
+
+                    labelsDevice.addAll(contentCount.keySet());
+                    labelsProvider.addAll(providerCount.keySet());
+
+                    // 장치 종류 : 개수만 따로 저장
+                    ArrayList<Integer> countsDevice = new ArrayList<Integer>();
+                    countsDevice.addAll(contentCount.values());
+                    for (int i = 0; i < countsDevice.size(); i++) {
+                        valuesDevice.add(new BarEntry(i, countsDevice.get(i)));
                     }
-                });
-                deviceList.getAxisLeft().setDrawLabels(false);
-                deviceList.getAxisRight().setDrawLabels(true);
-                deviceList.getXAxis().setDrawGridLines(false);
 
-                deviceList.setDescription(descrpt);
-                deviceList.setData(dataDevice);
-                deviceList.notifyDataSetChanged();
-                deviceList.invalidate();
+                    // 장치 제공자 : 개수만 따로 저장
+                    ArrayList<Integer> countsProvider = new ArrayList<Integer>();
+                    countsProvider.addAll(contentCount.values());
+                    for (int i = 0; i < countsProvider.size(); i++) {
+                        valuesProvider.add(new BarEntry(i, countsProvider.get(i)));
+                    }
 
-                providerList.getAxisLeft().setDrawLabels(false);
-                providerList.getAxisRight().setDrawLabels(true);
-                providerList.getXAxis().setDrawGridLines(false);
-                providerList.setDescription(descrpt);
-                providerList.setData(dataProvider);
-                providerList.notifyDataSetChanged();
-                providerList.invalidate();
+                    // 위험 정보 : 개수만 따로 저장
+                    ArrayList<Integer> countsCombined = new ArrayList<>();
+                    countsCombined.addAll(riskyCount.values());
+                    for (int i = 0; i < countsCombined.size(); i++) {
+                        valuesRisky.add(new BarEntry(i, countsCombined.get(i)));
+                    }
 
+                    BarDataSet setDevice, setProvider, setRisky;
+                    setDevice = new BarDataSet(valuesDevice, null);
+                    setProvider = new BarDataSet(valuesProvider, null);
+                    setRisky = new BarDataSet(valuesRisky, null);
+                    ArrayList<IBarDataSet> dataSetsDevice = new ArrayList<>();
+                    ArrayList<IBarDataSet> dataSetsProvider = new ArrayList<>();
+                    ArrayList<IBarDataSet> dataSetsRisky = new ArrayList<>();
+                    dataSetsDevice.add(setDevice);
+                    dataSetsProvider.add(setProvider);
+                    dataSetsRisky.add(setRisky);
+
+                    BarData dataDevice = new BarData(dataSetsDevice);
+                    BarData dataProvider = new BarData(dataSetsProvider);
+                    BarData dataRisky = new BarData(dataSetsRisky);
+
+                    dataProvider.setBarWidth(0.3f);
+                    dataDevice.setBarWidth(0.3f);
+                    dataRisky.setBarWidth(0.2f);
+
+                    // device list x축 설정
+                    XAxis xAxis = deviceList.getXAxis();
+                    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                    xAxis.setGranularity(1f);
+                    xAxis.setDrawGridLines(false);
+                    xAxis.setCenterAxisLabels(false);
+                    xAxis.setValueFormatter(new IndexAxisValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            if ((int) value < 0 || (int) value > labelsDevice.size())
+                                return " ";
+                            else
+                                return labelsDevice.get((int) value);
+                        }
+                    });
+
+                    // provider list x축 설정
+                    xAxis = providerList.getXAxis();
+                    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                    xAxis.setGranularity(1f);
+                    xAxis.setDrawGridLines(false);
+                    xAxis.setCenterAxisLabels(false);
+                    xAxis.setValueFormatter(new IndexAxisValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            if ((int) value < 0 || (int) value > labelsProvider.size())
+                                return " ";
+                            else
+                                return labelsProvider.get((int) value);
+                        }
+                    });
+
+                    // risky things list x축 설정
+                    xAxis = riskyList.getXAxis();
+                    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                    xAxis.setGranularity(1f);
+                    xAxis.setDrawGridLines(false);
+                    xAxis.setCenterAxisLabels(false);
+                    xAxis.setValueFormatter(new IndexAxisValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            if ((int) value < 0 || (int) value > labelsRisky.length)
+                                return " ";
+                            else
+                                return labelsRisky[(int) value];
+                        }
+                    });
+
+                    // 장치 종류 데아터 적용
+                    deviceList.getAxisLeft().setDrawLabels(false);
+                    deviceList.getAxisRight().setDrawLabels(true);
+                    deviceList.getXAxis().setDrawGridLines(false);
+                    deviceList.setDescription(descrpt);
+                    deviceList.setData(dataDevice);
+                    deviceList.invalidate();
+
+                    // 장치 제공자  데아터 적용
+                    providerList.getAxisLeft().setDrawLabels(false);
+                    providerList.getAxisRight().setDrawLabels(true);
+                    providerList.getXAxis().setDrawGridLines(false);
+                    providerList.setDescription(descrpt);
+                    providerList.setData(dataProvider);
+                    providerList.invalidate();
+
+                    // 위험 정보 데이터 적용
+                    riskyList.getAxisLeft().setDrawLabels(false);
+                    riskyList.getAxisRight().setDrawLabels(true);
+                    riskyList.getXAxis().setDrawGridLines(false);
+                    riskyList.setDescription(descrpt);
+                    riskyList.setData(dataRisky);
+                    riskyList.invalidate();
+
+                    count++;
+                }
             }
 
             @Override

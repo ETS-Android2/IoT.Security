@@ -1,11 +1,7 @@
 package com.example.iotsecurity;
 
-import android.icu.util.DateInterval;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
 
 /**
  * 제품 객체
