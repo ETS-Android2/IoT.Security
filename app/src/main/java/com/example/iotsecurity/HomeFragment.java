@@ -94,7 +94,7 @@ public class HomeFragment extends Fragment {
 
                     // 결합 서비스 종류별 항목
                     final String[] privacyThings = {"금융", "생체"};
-                    final String[] combinedThings = {"키", "나이", "성별", "이미지", "음성", "영상"};
+                    final String[] combinedThings = {"키", "나이", "성별", "이미지", "음성", "영상", "근육량", "BMI", "생체", "체"};
                     final String[] labelsRisky = {"이동형", "개인정보", "결합정보"};
 
                     /**
@@ -124,6 +124,8 @@ public class HomeFragment extends Fragment {
                             String currentCategory = products.get(i).category;
                             String currentProvider = products.get(i).provider;
                             String currentService = products.get(i).serviceType;
+//                            String currentData = products.get(i);
+                            String currentInfo = products.get(i).infoType;
                             boolean portable = products.get(i).portable;
 
                             // 장치 종류 데이터
@@ -141,8 +143,8 @@ public class HomeFragment extends Fragment {
                             // 위험 정보 데이터
                             if (portable)
                                 riskyCount.put("이동형", riskyCount.get("이동형") + 1);
-                            for (int j = 0; j < privacyThings.length; j++)
-                                if (currentService.contains(privacyThings[j])) {
+                            for (String a : privacyThings)
+                                if (currentInfo.contains(a)) {
                                     riskyCount.put("개인정보", riskyCount.get("개인정보") + 1);
                                     break;
                                 }
@@ -157,7 +159,6 @@ public class HomeFragment extends Fragment {
                         }
                     }
 
-                    Log.d("ERJADIJFIAJSDF ", riskyCount.toString());
                     Description descrpt = new Description();
                     descrpt.setText("");
 
@@ -196,6 +197,9 @@ public class HomeFragment extends Fragment {
 
                     // 장치 종류 : 개수만 따로 저장
                     ArrayList<Integer> countsDevice = new ArrayList<Integer>();
+//                    for (int i=0; i<labelsDevice.size(); i++) {
+//                        countsDevice.add(contentCount.get(labelsDevice.get(i)));
+//                    }
                     countsDevice.addAll(contentCount.values());
                     for (int i = 0; i < countsDevice.size(); i++) {
                         valuesDevice.add(new BarEntry(i, countsDevice.get(i)));
@@ -203,7 +207,7 @@ public class HomeFragment extends Fragment {
 
                     // 장치 제공자 : 개수만 따로 저장
                     ArrayList<Integer> countsProvider = new ArrayList<Integer>();
-                    countsProvider.addAll(contentCount.values());
+                    countsProvider.addAll(providerCount.values());
                     for (int i = 0; i < countsProvider.size(); i++) {
                         valuesProvider.add(new BarEntry(i, countsProvider.get(i)));
                     }

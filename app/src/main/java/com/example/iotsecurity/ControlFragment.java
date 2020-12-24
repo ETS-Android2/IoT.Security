@@ -161,8 +161,6 @@ public class ControlFragment extends Fragment {
 
         }
 
-
-
         // 체중계일 때 동작할 화면
         else if(product.category.equals("체중계")) {
             rootView = (ViewGroup) inflater.inflate(R.layout.control_fragment_scale, container, false);

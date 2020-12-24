@@ -80,6 +80,8 @@ public class SearchActivity<i> extends AppCompatActivity {
                 dataForDB.deviceType = beforeDB.deviceType;
                 dataForDB.serviceType = beforeDB.serviceType;
                 dataForDB.resourceType = beforeDB.resourceType;
+                dataForDB.portable = beforeDB.portable;
+                dataForDB.piId = beforeDB.piId;
 
                 /**
                  * GET Time Test
@@ -385,7 +387,7 @@ public class SearchActivity<i> extends AppCompatActivity {
         else
             p.always = 1;
         p.serviceType = r.getServices();
-        p.infoType = r.getDataType();
+        p.infoType = r.getDataType() + "/" + r.getDataList();
         p.deviceType = r.getDeviceType();
         p.agree = (r.getAgreement()==1);
         p.display = (r.getDisplay()==1);

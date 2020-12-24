@@ -132,6 +132,11 @@ public class AddByBluetoothActivity extends AppCompatActivity {
         });
     }
 
+    private boolean checkBluetooth() {
+        boolean result = false;
+
+        return result;
+    }
     private Product makeTempScale() throws JSONException {
         Product temp = new Product();
 
