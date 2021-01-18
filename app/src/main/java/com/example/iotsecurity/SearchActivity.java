@@ -39,7 +39,7 @@ import java.util.zip.DataFormatException;
 
 public class SearchActivity<i> extends AppCompatActivity {
     RecyclerView recyclerView = null;
-    ProductAdapter adapter;
+    SearchAdapter adapter;
 
     DatabaseReference mDatabase;
 
@@ -59,7 +59,7 @@ public class SearchActivity<i> extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemViewCacheSize(0);
-        adapter = new ProductAdapter();
+        adapter = new SearchAdapter();
         adapter.clearItems();
 
         adapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
