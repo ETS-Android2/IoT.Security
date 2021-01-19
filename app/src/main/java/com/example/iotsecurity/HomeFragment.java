@@ -99,7 +99,7 @@ public class HomeFragment extends Fragment {
 
                     /**
                      * 전체 제품 리스트 출력
-                     * 1번 제품이 없는 경우 예외 발
+                     * 1번 제품이 없는 경우 예외 발생
                      */
                     for (int i = 1; i <= 3; i++) {
                         temp = snapshot.child(String.valueOf(i)).getValue(Product.class);
@@ -118,7 +118,7 @@ public class HomeFragment extends Fragment {
                         riskyCount.put(labelsRisky[i], 0);
                     double avgRisk = 0.0;
 
-                    // 각 제품이 몇개인지? DATA to hashMap
+                    // 각 제품이 몇개인지? DATA to HashMap
                     for (int i = 0; i < products.size(); i++) {
                         if (products.get(i) != null) {
                             String currentCategory = products.get(i).category;
@@ -247,7 +247,7 @@ public class HomeFragment extends Fragment {
                     xAxis.setValueFormatter(new IndexAxisValueFormatter() {
                         @Override
                         public String getFormattedValue(float value) {
-                            if ((int) value < 0 || (int) value > labelsDevice.size())
+                            if ((int) value < 0 || (int) value >= labelsDevice.size())
                                 return " ";
                             else
                                 return labelsDevice.get((int) value);
@@ -263,7 +263,7 @@ public class HomeFragment extends Fragment {
                     xAxis.setValueFormatter(new IndexAxisValueFormatter() {
                         @Override
                         public String getFormattedValue(float value) {
-                            if ((int) value < 0 || (int) value > labelsProvider.size())
+                            if ((int) value < 0 || (int) value >= labelsProvider.size())
                                 return " ";
                             else
                                 return labelsProvider.get((int) value);
@@ -279,7 +279,7 @@ public class HomeFragment extends Fragment {
                     xAxis.setValueFormatter(new IndexAxisValueFormatter() {
                         @Override
                         public String getFormattedValue(float value) {
-                            if ((int) value < 0 || (int) value > labelsRisky.length)
+                            if ((int) value < 0 || (int) value >= labelsRisky.length)
                                 return " ";
                             else
                                 return labelsRisky[(int) value];

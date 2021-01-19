@@ -52,11 +52,9 @@ public class ProductFragment extends Fragment {
     FloatingActionButton addProductByWifi, openFab, addProductByBluetooth;
     private boolean isFabOpen = false;
 
-    static RequestQueue requestQueue;
     View.OnClickListener onClickListener;
 
     // hue api hub 아이피 주소
-    String baseUrl;
     String addUrl = String.format("http://192.168.0.7/api/");
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -169,8 +167,6 @@ public class ProductFragment extends Fragment {
             @Override
             public void onItemClick(View v, int position) {
                 Product tempLight = adapter.getItem(position);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("product", tempLight);
                 Intent intent = new Intent(getActivity(), ProductDetail.class);
                 intent.putExtra("product", tempLight);
 
